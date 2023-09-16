@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hello.board.pagging.repository.mybatis.MemberMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="memberId">
+        insert into member (name, email, psword, regdate)
+        values (#{name}, #{email}, #{psword}, #{regdate})
+    </insert>
+
+    <select id="findByEmail" resultType="Member">
+        select member_id, name, email, psword, regdate
+        from member
+        where email = #{email}
+    </select>
+</mapper>

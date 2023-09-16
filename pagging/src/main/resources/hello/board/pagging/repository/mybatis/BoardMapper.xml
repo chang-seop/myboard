@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hello.board.pagging.repository.mybatis.BoardMapper">
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="boardId">
+        insert into board (member_id, writer, title, content, regdate)
+        values (#{memberId}, #{writer}, #{title}, #{content}, #{regdate})
+    </insert>
+
+    <select id="findByMemberId" resultType="Board">
+        select board_id, member_id, writer, title, content, regdate, updatedate, deletedate
+        from board
+        where member_id = #{memberId}
+    </select>
+
+    <select id="findById" resultType="Board">
+        select board_id, member_id, writer, title, content, regdate, updatedate, deletedate
+        from board
+        where board_id = #{boardId}
+    </select>
+
+    <select id="findAll" resultType="Board">
+        select board_id, member_id, writer, title, content, regdate, updatedate, deletedate
+        from board
+        order by regdate desc limit #{startPosition}, #{maxResult}
+    </select>
+
+    <select id="getMaxCount" resultType="Integer">
+        select count(board_id)
+        from board
+    </select>
+
+</mapper>
