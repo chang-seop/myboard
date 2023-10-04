@@ -1,4 +1,4 @@
-package hello.board.pagging.dto;
+package hello.board.pagging.model;
 
 import lombok.Getter;
 import lombok.Setter;
