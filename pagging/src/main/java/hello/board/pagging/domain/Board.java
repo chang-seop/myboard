@@ -1,30 +1,33 @@
 package hello.board.pagging.domain;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board {
     private Long boardId;
     private Long memberId;
-    private String writer;
-    private String title;
-    private String content;
-    private LocalDateTime regdate;
-    private LocalDateTime updatedate;
-    private LocalDateTime deletedate;
+    private String boardWriter;
+    private String boardTitle;
+    private String boardContent;
+    private LocalDateTime boardRegdate;
+    private LocalDateTime boardUpdateDate;
+    private LocalDateTime boardDeleteDate;
 
     @Builder
-    public Board(Long boardId, Long memberId, String writer, String title, String content, LocalDateTime regdate, LocalDateTime updatedate, LocalDateTime deletedate) {
+    public Board(Long boardId, Long memberId, String boardWriter, String boardTitle, String boardContent, LocalDateTime boardRegdate, LocalDateTime boardUpdateDate, LocalDateTime boardDeleteDate) {
         this.boardId = boardId;
         this.memberId = memberId;
-        this.writer = writer;
-        this.title = title;
-        this.content = content;
-        this.regdate = regdate;
-        this.updatedate = updatedate;
-        this.deletedate = deletedate;
+        this.boardWriter = boardWriter;
+        this.boardTitle = boardTitle;
+        this.boardContent = boardContent;
+        this.boardRegdate = boardRegdate;
+        this.boardUpdateDate = boardUpdateDate;
+        this.boardDeleteDate = boardDeleteDate;
     }
 }
