@@ -1,6 +1,6 @@
 package hello.board.pagging.repository.mybatis;
 
-import hello.board.pagging.domain.Board;
+import hello.board.pagging.domain.Authority;
 import hello.board.pagging.domain.Member;
 import hello.board.pagging.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,11 @@ public class MyBatisMemberRepository implements MemberRepository {
     public Member save(Member user) {
         memberMapper.save(user);
         return user;
+    }
+
+    @Override
+    public void insertAuthority(List<Authority> authorities) {
+        memberMapper.insertAuthority(authorities);
     }
 
     @Override
