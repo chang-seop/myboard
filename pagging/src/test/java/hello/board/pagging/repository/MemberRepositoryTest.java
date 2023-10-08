@@ -1,15 +1,23 @@
 package hello.board.pagging.repository;
 
 import hello.board.pagging.domain.Member;
-import org.assertj.core.api.Assertions;
+import hello.board.pagging.domain.Authority;
+import hello.board.pagging.model.Role;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.*;
+
+@Slf4j
 @SpringBootTest
 @Transactional
 public class MemberRepositoryTest {
@@ -18,30 +26,32 @@ public class MemberRepositoryTest {
     private MemberRepository memberRepository;
 
     @Test
+    @DisplayName("유저 저장 테스트")
     void save() {
         // given
         Member member = Member.builder()
-                .email("hello1@naver.com")
-                .name("한국")
-                .psword("123456")
-                .regdate(LocalDateTime.now())
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
                 .build();
 
         // when
         Member savedMember = memberRepository.save(member);
 
         // then
-        Assertions.assertThat(savedMember).isEqualTo(member);
+        assertThat(savedMember).isEqualTo(member);
     }
 
     @Test
+    @DisplayName("email 로 조회 테스트")
     void findByEmail() {
         // given
         Member member = Member.builder()
-                .email("hello1@naver.com")
-                .name("한국")
-                .psword("123456")
-                .regdate(LocalDateTime.now())
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -50,6 +60,42 @@ public class MemberRepositoryTest {
         Optional<Member> findMember = memberRepository.findByEmail("hello1@naver.com");
 
         // then
-        Assertions.assertThat(findMember.get().getName()).isEqualTo("한국");
+        assertThat(findMember.orElse(null).getMemberNm()).isEqualTo("한국");
+    }
+
+    @Test
+    @DisplayName("권한 저장 2개 테스트")
+    void insertListOfAuthority() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
+                .build();
+
+        memberRepository.save(member);
+
+        List<Authority> auth = new ArrayList<>();
+        auth.add(Authority.builder()
+                        .authEmail("hello1@naver.com")
+                        .memberId(member.getMemberId())
+                        .authRole(Role.ADMIN.getAuth()).build());
+
+        auth.add(Authority.builder()
+                        .authEmail("hello1@naver.com")
+                        .memberId(member.getMemberId())
+                        .authRole(Role.USER.getAuth()).build());
+
+        // when
+        memberRepository.insertAuthority(auth);
+
+        // then email 로 조회 후 권한 존재 유무 확인
+        Optional<Member> login = memberRepository.findByEmail("hello1@naver.com");
+        List<String> roles = login.get().getMemberRoles();
+
+        assertThat(roles.size()).isEqualTo(2);
+        assertThat(roles.contains(Role.USER.getAuth())).isTrue();
+        assertThat(roles.contains(Role.ADMIN.getAuth())).isTrue();
     }
 }

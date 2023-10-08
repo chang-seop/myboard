@@ -1,46 +1,58 @@
 package hello.board.pagging.service;
 
+import hello.board.pagging.domain.Authority;
 import hello.board.pagging.domain.Member;
-import hello.board.pagging.dto.MemberLoginDto;
-import hello.board.pagging.dto.MemberSaveDto;
+import hello.board.pagging.model.Role;
+import hello.board.pagging.model.member.MemberSaveDto;
 import hello.board.pagging.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    @Transactional(readOnly = true)
+    private final BCryptPasswordEncoder passwordEncoder;
+    @Transactional
     public void save(MemberSaveDto memberDto) {
+        // email 이 DB 에 중복되는지 확인
+        Optional<Member> findMember = memberRepository.findByEmail(memberDto.getMemberEmail());
+        if(findMember.isPresent()) {
+            // TODO : Exception 정의 : 이미 존재하는 이메일입니다.
+            throw new RuntimeException("이미 존재하는 이메일");
+        }
+
+        // 저장
         Member member = Member.builder()
-                .name(memberDto.getName())
-                .email(memberDto.getEmail())
-                .psword(memberDto.getPsword()) // TODO: 암호화 처리 (인코딩)
-                .regdate(LocalDateTime.now())
+                .memberNm(memberDto.getMemberNm())
+                .memberEmail(memberDto.getMemberEmail())
+                .memberPwd(passwordEncoder.encode(memberDto.getMemberPwd())) // 암호화 처리
+                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
+
+        List<Authority> authList = new ArrayList<>();
+        // 유저 권한 등록
+        Authority auth = Authority.builder()
+                .memberId(member.getMemberId())
+                .authEmail(member.getMemberEmail())
+                .authRole(Role.USER.getAuth()).build();
+
+        authList.add(auth);
+
+        memberRepository.insertAuthority(authList);
     }
 
     @Transactional(readOnly = true)
-    public void login(MemberLoginDto memberLoginDto) {
-        Optional<Member> findMember = memberRepository.findByEmail(memberLoginDto.getEmail());
-        Member member = findMember.orElse(null);
-
-        if(member == null) {
-            // TODO: ExceptionHandler 이동 (존재하지 않은 이메일)
-            throw new RuntimeException();
-        }
-
-        // TODO: passwordEncoder.match() 활용
-        if(!(member.getPsword().equals(memberLoginDto.getPsword()))) {
-            // TODO: ExceptionHandler 이동 (비밀번호 일치하지 않음)
-            throw new RuntimeException();
-        }
+    public Optional<Member> login(String email) {
+        return memberRepository.findByEmail(email);
     }
 }
