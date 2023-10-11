@@ -2,15 +2,18 @@ package hello.board.pagging.model.member;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
+@NoArgsConstructor
 public class MemberLoginDto {
-    private String email;
-    private String psword;
+    private String memberEmail;
+    private String memberPwd;
 
     @Builder
-    public MemberLoginDto(String email, String psword) {
-        this.email = email;
-        this.psword = psword;
+    public MemberLoginDto(String memberEmail, String memberPwd) {
+        this.memberEmail = memberEmail;
+        this.memberPwd = memberPwd;
     }
 }
