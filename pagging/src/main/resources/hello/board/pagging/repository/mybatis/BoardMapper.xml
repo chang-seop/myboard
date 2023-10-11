@@ -3,33 +3,40 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="hello.board.pagging.repository.mybatis.BoardMapper">
+    <sql id="boardSelect">
+        select board_id, member_id, board_writer, board_title, board_content, board_regdate, board_update_date, board_delete_date
+        from Board
+    </sql>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="boardId">
-        insert into board (member_id, writer, title, content, regdate)
-        values (#{memberId}, #{writer}, #{title}, #{content}, #{regdate})
+    <insert id="save" useGeneratedKeys="true" keyProperty="boardId">
+        insert into board (member_id, board_writer, board_title, board_content, board_regdate)
+        values (#{memberId}, #{boardWriter}, #{boardTitle}, #{boardContent}, #{boardRegdate})
     </insert>
 
     <select id="findByMemberId" resultType="Board">
-        select board_id, member_id, writer, title, content, regdate, updatedate, deletedate
-        from board
+        <include refid="boardSelect"/>
         where member_id = #{memberId}
     </select>
 
     <select id="findById" resultType="Board">
-        select board_id, member_id, writer, title, content, regdate, updatedate, deletedate
-        from board
+        <include refid="boardSelect"/>
         where board_id = #{boardId}
     </select>
 
     <select id="findAll" resultType="Board">
-        select board_id, member_id, writer, title, content, regdate, updatedate, deletedate
-        from board
-        order by regdate desc limit #{startPosition}, #{maxResult}
+        <include refid="boardSelect"/>
+        <choose>
+            <when test="title == true">
+                order by board_title asc limit #{startPosition}, #{maxResult}
+            </when>
+            <otherwise>
+                order by board_regdate desc limit #{startPosition}, #{maxResult}
+            </otherwise>
+        </choose>
     </select>
 
-    <select id="getMaxCount" resultType="Integer">
+    <select id="getPageMaxCount" resultType="Integer">
         select count(board_id)
         from board
     </select>
-
 </mapper>

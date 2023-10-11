@@ -9,9 +9,9 @@ import java.util.Optional;
 
 @Mapper
 public interface BoardMapper {
-    void create(Board board);
+    void save(Board board);
     Optional<Board> findById(Long id);
     List<Board> findByMemberId(Long memberId);
-    List<Board> findAll(@Param("startPosition") int startPosition, @Param("maxResult") int maxResult);
-    Integer getMaxCount();
+    List<Board> findAll(@Param("startPosition") int startPosition, @Param("maxResult") int maxResult, @Param("title") boolean title);
+    Integer getPageMaxCount();
 }
