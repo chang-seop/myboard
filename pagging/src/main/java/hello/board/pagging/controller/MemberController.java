@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,32 +22,46 @@ public class MemberController {
 
     // 로그인 페이지 폼
     @GetMapping("/loginView")
-    public String loginForm(@RequestParam(value = "fail", required = false, defaultValue = "false") Boolean fail,
+    public String loginForm(@RequestParam(required = false, defaultValue = "false") Boolean fail,
+                            @ModelAttribute MemberLoginDto memberLoginDto,
+                            Errors errors,
                             Model model) {
-        log.info("login={}", fail);
         if(fail) {
-            model.addAttribute("fail", "아이디 또는 비밀번호가 일치하지 않습니다.");
+            errors.reject("loginFalse", "아이디 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        model.addAttribute("memberLoginDto", new MemberLoginDto());
         return "login";
     }
 
     // 회원가입 페이지 폼
     @GetMapping("/signupView")
-    public String signupForm(@ModelAttribute("memberSaveDto") MemberSaveDto memberSaveDto) {
+    public String signupForm(@RequestParam(required = false, defaultValue = "false") Boolean fail,
+                             @ModelAttribute MemberSaveDto memberSaveDto,
+                             Errors errors,
+                             Model model) {
+        if(fail) {
+            errors.reject("duplicateEmail", "중복된 이메일입니다.");
+        }
+
         return "signup";
     }
 
     // 회원가입
     @PostMapping("/signup")
     public String signup(@Valid @ModelAttribute MemberSaveDto memberSaveDto,
-                         BindingResult bindingResult) {
+                         BindingResult bindingResult,
+                         @RequestParam(required = false, defaultValue = "false") Boolean fail) {
+
         if(bindingResult.hasErrors()) {
             return "signup";
         }
 
-        memberService.save(memberSaveDto);
+        try{
+            memberService.save(memberSaveDto);
+        }
+        catch(RuntimeException e) {
+            return "redirect:/members/signupView?fail=true";
+        }
 
         return "redirect:/members/loginView";
     }
