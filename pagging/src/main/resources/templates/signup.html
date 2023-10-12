@@ -7,13 +7,14 @@
 
 <section>
     <form id="signupForm" name="signupForm" method="post" th:action="@{/members/signup}" th:object="${memberSaveDto}">
-        <!-- 글로벌(Object) 오류 메시지 출력 -->
-            <p class="field-error" th:text="${fail}">로그인 오류 메시지</p>
         <div>
             <div class="signup-box">
                 <h1>회원가입</h1>
+                <div th:if="${#fields.hasGlobalErrors()}">
+                    <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+                </div>
                 <div>
-                    <input type="text" title="아이디 입력" placeholder="아이디" id="memberEmail" name="memberEmail" th:field="*{memberEmail}">
+                    <input type="text" title="이메일 입력" placeholder="이메일" id="memberEmail" name="memberEmail" th:field="*{memberEmail}">
                     <div class="field-error" th:errors="*{memberEmail}"></div>
                 </div>
 
