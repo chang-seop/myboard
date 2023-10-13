@@ -2,6 +2,7 @@ package hello.board.pagging.repository;
 
 import hello.board.pagging.domain.Board;
 import hello.board.pagging.domain.Member;
+import hello.board.pagging.model.board.SearchDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +26,24 @@ public class BoardRepositoryTest {
     public void create() {
         // given
         Member member = Member.builder()
-                .email("hello1@naver.com")
-                .name("한국")
-                .psword("123456")
-                .regdate(LocalDateTime.now())
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
 
         Board board = Board.builder()
-                .writer("한국")
+                .boardWriter("한국")
                 .memberId(member.getMemberId())
-                .title("제목")
-                .content("글")
-                .regdate(LocalDateTime.now())
+                .boardTitle("제목")
+                .boardContent("글")
+                .boardRegdate(LocalDateTime.now())
                 .build();
 
         // when
-        Board findBoard = boardRepository.create(board);
+        Board findBoard = boardRepository.save(board);
 
         // then
         Assertions.assertThat(findBoard.getMemberId()).isEqualTo(member.getMemberId());
@@ -52,23 +53,23 @@ public class BoardRepositoryTest {
     public void findById() {
         // given
         Member member = Member.builder()
-                .email("hello1@naver.com")
-                .name("한국")
-                .psword("123456")
-                .regdate(LocalDateTime.now())
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
 
         Board board = Board.builder()
-                .writer("한국")
+                .boardWriter("한국")
                 .memberId(member.getMemberId())
-                .title("제목")
-                .content("글")
-                .regdate(LocalDateTime.now())
+                .boardTitle("제목")
+                .boardContent("글")
+                .boardRegdate(LocalDateTime.now())
                 .build();
 
-        Board createdBoard = boardRepository.create(board);
+        Board createdBoard = boardRepository.save(board);
 
         // when
         Optional<Board> findBoard = boardRepository.findById(createdBoard.getBoardId());
@@ -81,85 +82,87 @@ public class BoardRepositoryTest {
     public void findByMemberId() {
         // given
         Member member = Member.builder()
-                .email("hello1@naver.com")
-                .name("한국")
-                .psword("123456")
-                .regdate(LocalDateTime.now())
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
                 .build();
         memberRepository.save(member);
 
         for(int i = 0; i < 2; i++) {
             Board board = Board.builder()
-                    .writer("한국")
+                    .boardWriter("한국")
                     .memberId(member.getMemberId())
-                    .title("제목" + i)
-                    .content("글" + i)
-                    .regdate(LocalDateTime.now())
+                    .boardTitle("제목" + i)
+                    .boardContent("글" + i)
+                    .boardRegdate(LocalDateTime.now())
                     .build();
-            boardRepository.create(board);
+            boardRepository.save(board);
         }
 
         // when
         List<Board> findBoardList = boardRepository.findByMemberId(member.getMemberId());
 
         // then
-        Assertions.assertThat(findBoardList.get(0).getWriter()).isEqualTo("한국");
-        Assertions.assertThat(findBoardList.get(1).getWriter()).isEqualTo("한국");
+        Assertions.assertThat(findBoardList.get(0).getBoardWriter()).isEqualTo("한국");
+        Assertions.assertThat(findBoardList.get(1).getBoardWriter()).isEqualTo("한국");
     }
 
     @Test
     public void findAll() {
         // given
         Member member = Member.builder()
-                .email("hello1@naver.com")
-                .name("한국")
-                .psword("123456")
-                .regdate(LocalDateTime.now())
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
                 .build();
         memberRepository.save(member);
 
         for(int i = 0; i < 20; i++) {
             Board board = Board.builder()
-                    .writer("한국")
+                    .boardWriter("한국")
                     .memberId(member.getMemberId())
-                    .title("제목" + i)
-                    .content("글" + i)
-                    .regdate(LocalDateTime.now())
+                    .boardTitle("제목" + i)
+                    .boardContent("글" + i)
+                    .boardRegdate(LocalDateTime.now())
                     .build();
-            boardRepository.create(board);
+            boardRepository.save(board);
         }
 
+        SearchDto searchDto = new SearchDto();
+
         // when
-        List<Board> findBoardList = boardRepository.findAll(0, 10);
+        List<Board> findBoardList = boardRepository.findAll(searchDto);
 
         // then
         Assertions.assertThat(findBoardList.size()).isEqualTo(10);
     }
 
     @Test
-    public void getMaxCount() {
+    public void getPageMaxCount() {
         // given
         Member member = Member.builder()
-                .email("hello1@naver.com")
-                .name("한국")
-                .psword("123456")
-                .regdate(LocalDateTime.now())
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
                 .build();
         memberRepository.save(member);
 
         for(int i = 0; i < 20; i++) {
             Board board = Board.builder()
-                    .writer("한국")
+                    .boardWriter("한국")
                     .memberId(member.getMemberId())
-                    .title("제목" + i)
-                    .content("글" + i)
-                    .regdate(LocalDateTime.now())
+                    .boardTitle("제목" + i)
+                    .boardContent("글" + i)
+                    .boardRegdate(LocalDateTime.now())
                     .build();
-            boardRepository.create(board);
+            boardRepository.save(board);
         }
 
         // when
-        Integer maxCount = boardRepository.getMaxCount();
+        Integer maxCount = boardRepository.getPageMaxCount();
 
         // then
         Assertions.assertThat(maxCount).isEqualTo(20);
