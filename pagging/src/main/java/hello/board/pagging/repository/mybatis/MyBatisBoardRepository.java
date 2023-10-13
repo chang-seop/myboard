@@ -1,6 +1,7 @@
 package hello.board.pagging.repository.mybatis;
 
 import hello.board.pagging.domain.Board;
+import hello.board.pagging.model.board.SearchDto;
 import hello.board.pagging.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,8 +15,8 @@ public class MyBatisBoardRepository implements BoardRepository {
     private final BoardMapper boardMapper;
 
     @Override
-    public Board create(Board board) {
-        boardMapper.create(board);
+    public Board save(Board board) {
+        boardMapper.save(board);
         return board;
     }
 
@@ -30,12 +31,12 @@ public class MyBatisBoardRepository implements BoardRepository {
     }
 
     @Override
-    public List<Board> findAll(int startPosition, int maxResult) {
-        return boardMapper.findAll(startPosition, maxResult);
+    public List<Board> findAll(SearchDto params) {
+        return boardMapper.findAll(params);
     }
 
     @Override
-    public Integer getMaxCount() {
-        return boardMapper.getMaxCount();
+    public Integer getPageMaxCount() {
+        return boardMapper.getPageMaxCount();
     }
 }
