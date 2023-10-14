@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html th:replace="~{layouts/homeLayout :: homeLayout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>board</title>
+</head>
+<body>
+
+<section>
+    <div class="card w-75 p-3" style="float: none; margin:0 auto;" th:each="board : ${boards}">
+        <h5 class="card-header" th:text="${board.boardTitle}">Featured</h5>
+        <div class="card-body">
+            <h5 class="card-title" th:text="${board.boardContent}">Special title treatment</h5>
+            <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+            <span th:text="${board.boardWriter}">작성자</span>
+            <span th:text="${#temporals.format(board.boardRegdate, 'yyyy년 MM월 dd일 HH시 mm분')}">날짜</span>
+        </div>
+    </div>
+
+    <!-- 페이징 버튼 -->
+
+    <!-- 게시글 생성 및 삭제 -->
+</section>
+
+</body>
+</html>
