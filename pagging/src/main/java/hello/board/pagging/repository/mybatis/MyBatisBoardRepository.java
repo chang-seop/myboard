@@ -31,8 +31,8 @@ public class MyBatisBoardRepository implements BoardRepository {
     }
 
     @Override
-    public List<Board> findAll(SearchDto params) {
-        return boardMapper.findAll(params);
+    public List<Board> findAll(SearchDto searchDto) {
+        return boardMapper.findAll(searchDto);
     }
 
     @Override

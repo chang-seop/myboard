@@ -2,6 +2,7 @@ package hello.board.pagging.repository;
 
 import hello.board.pagging.domain.Board;
 import hello.board.pagging.domain.Member;
+import hello.board.pagging.model.Pagination;
 import hello.board.pagging.model.board.SearchDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -131,6 +132,8 @@ public class BoardRepositoryTest {
         }
 
         SearchDto searchDto = new SearchDto();
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), searchDto);
+        searchDto.setPagination(pagination);
 
         // when
         List<Board> findBoardList = boardRepository.findAll(searchDto);
