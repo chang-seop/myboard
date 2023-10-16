@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="/js/bootstrap.bundle.min.js" async></script>
-
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
     <title th:replace="${title}">extendLayout</title>
 </head>
 <body>
@@ -29,7 +29,7 @@
                             <a class="nav-link active" aria-current="page" href="#" th:href="@{/}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" th:href="@{/board}">Board</a>
+                            <a class="nav-link" href="#" th:href="@{/boardView}">Board</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#" th:href="@{/members/loginView}">Login</a>
