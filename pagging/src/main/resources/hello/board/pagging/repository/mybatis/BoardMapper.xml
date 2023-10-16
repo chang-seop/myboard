@@ -38,7 +38,7 @@
         from
             board
         order by
-            board_regdate desc limit #{pagination.limitStart}, #{recordSize}
+            board_id desc limit #{pagination.limitStart}, #{recordSize}
     </select>
 
     <select id="getPageMaxCount" resultType="Integer">

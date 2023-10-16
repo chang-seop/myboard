@@ -13,6 +13,6 @@ public interface BoardMapper {
     void save(Board board);
     Optional<Board> findById(Long id);
     List<Board> findByMemberId(Long memberId);
-    List<Board> findAll(@Param("params") SearchDto params);
+    List<Board> findAll(SearchDto searchDto);
     Integer getPageMaxCount();
 }
