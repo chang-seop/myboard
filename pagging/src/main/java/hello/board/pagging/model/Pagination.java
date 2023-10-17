@@ -15,7 +15,7 @@ public class Pagination {
 
     public Pagination(int totalRecordCount, SearchDto params) {
         if(totalRecordCount > 0) {
-            this.totalPageCount = totalRecordCount;
+            this.totalRecordCount = totalRecordCount;
             calculation(params);
         }
     }
