@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html th:fragment="homeLayout (title, sections)" xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html th:fragment="homeLayout (title, sections)"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -29,19 +32,19 @@
                             <a class="nav-link active" aria-current="page" href="#" th:href="@{/}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" th:href="@{/boardView}">Board</a>
+                            <a class="nav-link" href="#" sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')" th:href="@{/board}">Board</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" th:href="@{/members/loginView}">Login</a>
+                            <a class="nav-link" href="#" sec:authorize="isAnonymous()" th:href="@{/members/loginView}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" th:href="@{/members/signupView}">SignUp</a>
+                            <a class="nav-link" href="#" sec:authorize="isAnonymous()" th:href="@{/members/signupView}">SignUp</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" th:href="@{/members/logout}">Logout</a>
-                        </li>
+                            <a class="nav-link" href="#" sec:authorize="isAuthenticated()" th:href="@{/members/logout}">Logout</a>
+                        </li>   
                         <li class="nav-item">
-                            <a class="nav-link" href="#" th:href="@{/members/admin}">Admin</a>
+                            <a class="nav-link" href="#" sec:authorize="hasAnyAuthority('ROLE_ADMIN')" th:href="@{/members/admin}">Admin</a>
                         </li>
                     </ul>
                 </div>
