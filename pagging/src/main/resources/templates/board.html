@@ -16,7 +16,6 @@
                 findAllPost();
             }
 
-
             // 게시글 리스트 조회
             function findAllPost() {
 
@@ -35,44 +34,9 @@
                 // 4. @ModelAttribute 를 이용해서 뷰(HTML)로 전달한 SearchDto 타입의 객체인 params 를 의미
                 const params = [[ ${params} ]];
 
-                // 5. 리스트에 출력되는 게시글 번호를 처리하기 위해 사용되는 변수 (리스트에서 번호는 페이지 정보를 이용해서 계산해야 함)
-                let num = pagination.totalRecordCount - ((params.page - 1) * params.recordSize);
-
-                // 6. 리스트 데이터 렌더링
-                drawList(list, num);
-
-                // 7. 페이지 번호 렌더링
+                // 5. 페이지 번호 렌더링
                 drawPage(pagination, params);
             }
-
-
-            // 리스트 HTML draw
-            function drawList(list, num) {
-
-                // 1. 렌더링 할 HTML 을 저장할 변수
-                let html = '';
-
-                /*
-                 * 2. 기존에 타임리프(Thymeleaf)를 이용해서 리스트 데이터를 그리던 것과 유사한 로직
-                 *    기존에는 게시글 번호를 (전체 데이터 수 - loop 의 인덱스 번호)로 처리했으나, 현재는 (전체 데이터 수 - ((현재 페이지 번호 - 1) * 페이지당 출력할 데이터 개수))로 정밀히 계산
-                 */
-                list.forEach(row => {
-                    html += `
-                        <div class="card w-75 p-3" style="float: none; margin:0 auto;">
-                            <a class="card-header" href="/boardView/${row.boardId}">${row.boardTitle}</a>
-                            <div class="card-body">
-                                <h5 class="card-title">${row.boardContent}</h5>
-                                <p>${row.boardWriter}</p>
-                                <p>${dayjs(row.boardRegdate).format('YYYY년 MM월 DD일 HH시 mm분')}</p>
-                            </div>
-                        </div>
-                    `;
-                })
-
-                // 3. id가 "list"인 요소를 찾아 HTML을 렌더링
-                document.getElementById('list').innerHTML = html;
-            }
-
 
             // 페이지 HTML draw
             function drawPage(pagination, params) {
@@ -140,8 +104,14 @@
     </th:block>
 
     <!--/* 리스트 데이터 렌더링 영역 */-->
-    <div id="list">
-
+    <div class="card w-75 p-3 my-2" style="float: none; margin:0 auto;" th:each="board : ${response.list}">
+        <a class="card-header" th:href="@{/board/{param1}(param1=${board.boardId})}" th:text="${board.boardTitle}"></a>
+        <div class="card-body">
+            <h5 class="card-title" th:text="${board.boardContent}">Special title treatment</h5>
+            <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+            <span th:text="${board.boardWriter}">작성자</span>
+            <span th:text="${#temporals.format(board.boardRegdate, 'yyyy년 MM월 dd일 HH시 mm분')}">날짜</span>
+        </div>
     </div>
 
     <!-- /* 페이지네이션 렌더링 영역 */ -->
@@ -150,10 +120,8 @@
     </nav>
 
     <!--/* 글쓰기 버튼 */-->
-    <div class="row">
-        <div class="col-lg-6 col-sm-12 text-lg-start text-center">
-            <a class="btn btn-light" value="test" th:href="@{/board/writeView}" th:text="글쓰기">글쓰기</a>
-        </div>
+    <div class="container w-75 p-3 my-2">
+        <a class="btn btn-primary" th:href="@{/board/writeView}" th:text="글쓰기">글쓰기</a>
     </div>
 </section>
 </body>

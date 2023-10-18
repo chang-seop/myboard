@@ -6,8 +6,14 @@
 <body>
 
 <section>
-    <h5>Board -> 로그인이 반드시 필요합니다</h5>
-    <h5>admin -> ROLE_ADMIN 권한을 가진 분만 요청 가능합니다.</h5>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-7 ms-auto me-2 my-2 p-3 bg-light border"></div>
+            <div class="col-3 me-auto ms-2 my-2 p-3 bg-light border text-center">
+                <p th:text="${memberName}"></p>
+            </div>
+        </div>
+    </div>
 </section>
 
 </body>
