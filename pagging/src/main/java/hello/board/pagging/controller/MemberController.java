@@ -35,14 +35,7 @@ public class MemberController {
 
     // 회원가입 페이지 폼
     @GetMapping("/signupView")
-    public String signupForm(@RequestParam(required = false, defaultValue = "false") Boolean fail,
-                             @ModelAttribute MemberSaveDto memberSaveDto,
-                             Errors errors,
-                             Model model) {
-        if(fail) {
-            errors.reject("duplicateEmail", "중복된 이메일입니다.");
-        }
-
+    public String signupForm(@ModelAttribute MemberSaveDto memberSaveDto) {
         return "signup";
     }
 
@@ -52,6 +45,7 @@ public class MemberController {
                          BindingResult bindingResult,
                          @RequestParam(required = false, defaultValue = "false") Boolean fail) {
 
+        // 바인딩 실패시
         if(bindingResult.hasErrors()) {
             return "signup";
         }
@@ -60,7 +54,9 @@ public class MemberController {
             memberService.save(memberSaveDto);
         }
         catch(RuntimeException e) {
-            return "redirect:/members/signupView?fail=true";
+            // 중복된 이메일 일 경우
+            bindingResult.reject("duplicateEmail", "중복된 이메일입니다.");
+            return "signup";
         }
 
         return "redirect:/members/loginView";

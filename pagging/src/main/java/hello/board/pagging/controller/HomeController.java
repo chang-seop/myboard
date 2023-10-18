@@ -16,7 +16,7 @@ public class HomeController {
 
         if(memberDetailsDto != null) {
             // 로그인 시 회원 닉네임 Model 에 등록
-            model.addAttribute("memberName", memberDetailsDto.getMember().getMemberNm() + "님");
+            model.addAttribute("memberName", memberDetailsDto.getMember().getMemberNm() + "님 환영합니다.");
         }
 
         return "home";
