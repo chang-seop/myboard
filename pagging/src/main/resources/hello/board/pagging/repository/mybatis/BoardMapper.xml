@@ -47,4 +47,34 @@
         from
             board
     </select>
+
+    <resultMap id="boardFileMap" type="BoardFile">
+        <id column="board_id" property="boardId"/>
+        <result column="member_id" property="memberId"/>
+        <result column="board_writer" property="boardWriter"/>
+        <result column="board_title" property="boardTitle"/>
+        <result column="board_regdate" property="boardRegdate"/>
+        <result column="board_update_date" property="boardUpdateDate"/>
+        <result column="board_delete_date" property="boardDeleteDate"/>
+        <collection property="fileList" ofType="File">
+            <id column="file_id" property="fileId"/>
+            <result column="board_id" property="boardId"/>
+            <result column="upload_file_name" property="uploadFileName"/>
+            <result column="store_file_name" property="storeFileName"/>
+            <result column="file_regdate" property="fileRegdate"/>
+        </collection>
+    </resultMap>
+
+    <!-- Board join File 조회 -->
+    <select id="findByIdWithFile" parameterType="Long" resultMap="boardFileMap">
+        select
+            b.board_id, b.member_id, b.board_writer, b.board_title, b.board_content, b.board_regdate, b.board_update_date, b.board_delete_date,
+            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_regdate
+        from
+            board as b inner join file as f
+                on
+                    b.board_id = f.board_id
+        where
+            b.board_id = #{id}
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package hello.board.pagging.repository.mybatis;
 
 import hello.board.pagging.domain.Board;
+import hello.board.pagging.domain.BoardFile;
 import hello.board.pagging.model.board.SearchDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,4 +16,5 @@ public interface BoardMapper {
     List<Board> findByMemberId(Long memberId);
     List<Board> findAll(SearchDto searchDto);
     Integer getPageMaxCount();
+    Optional<BoardFile> findByIdWithFile(Long id);
 }
