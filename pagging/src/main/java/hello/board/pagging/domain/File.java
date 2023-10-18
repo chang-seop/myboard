@@ -11,13 +11,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class File {
     private Long fileId;
-    private String fileName;
+    private Long boardId;
+    private String uploadFileName;
+    private String storeFileName;
     private LocalDateTime fileRegdate;
 
     @Builder
-    public File(Long fileId, String fileName, LocalDateTime fileRegdate) {
+    public File(Long fileId, Long boardId, String uploadFileName, String storeFileName, LocalDateTime fileRegdate) {
         this.fileId = fileId;
-        this.fileName = fileName;
+        this.boardId = boardId;
+        this.uploadFileName = uploadFileName;
+        this.storeFileName = storeFileName;
         this.fileRegdate = fileRegdate;
     }
 }
