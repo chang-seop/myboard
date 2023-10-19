@@ -7,26 +7,19 @@
 
 <section>
     <form id="signupForm" name="signupForm" method="post" th:action="@{/members/signup}" th:object="${memberSaveDto}">
-        <div>
-            <div class="signup-box">
+        <div class="container w-25">
+            <div class="card p-3 my-2 bg-light border">
                 <h1>회원가입</h1>
                 <div th:if="${#fields.hasGlobalErrors()}">
                     <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
                 </div>
-                <div>
-                    <input type="text" title="이메일 입력" placeholder="이메일" id="memberEmail" name="memberEmail" th:field="*{memberEmail}">
-                    <div class="field-error" th:errors="*{memberEmail}"></div>
-                </div>
-
-                <div>
-                    <input type="password" title="비밀번호 입력" placeholder="비밀번호" id="memberPwd" name="memberPwd" th:field="*{memberPwd}">
-                    <div class="field-error" th:errors="*{memberPwd}"></div>
-                </div>
-                <div>
-                    <input type="text" title="닉네임 입력" placeholder="닉네임" id="memberNm" name="memberNm" th:field="*{memberNm}">
-                    <div class="field-error" th:errors="*{memberNm}"></div>
-                </div>
-                <div><button type="submit">회원가입</button></div>
+                <input class="my-2" type="text" title="이메일 입력" placeholder="이메일" id="memberEmail" name="memberEmail" th:field="*{memberEmail}">
+                <div class="field-error" th:errors="*{memberEmail}"></div>
+                <input class="my-2" type="password" title="비밀번호 입력" placeholder="비밀번호" id="memberPwd" name="memberPwd" th:field="*{memberPwd}">
+                <div class="field-error" th:errors="*{memberPwd}"></div>
+                <input class="my-2" type="text" title="닉네임 입력" placeholder="닉네임" id="memberNm" name="memberNm" th:field="*{memberNm}">
+                <div class="field-error" th:errors="*{memberNm}"></div>
+                <button class="my-2" type="submit">회원가입</button>
             </div>
         </div>
     </form>
