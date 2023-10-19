@@ -1,6 +1,7 @@
 package hello.board.pagging.repository.mybatis;
 
 import hello.board.pagging.domain.Board;
+import hello.board.pagging.domain.BoardFile;
 import hello.board.pagging.model.board.SearchDto;
 import hello.board.pagging.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,10 @@ public class MyBatisBoardRepository implements BoardRepository {
     @Override
     public Integer getPageMaxCount() {
         return boardMapper.getPageMaxCount();
+    }
+
+    @Override
+    public Optional<BoardFile> findByIdWithFile(Long id) {
+        return boardMapper.findByIdWithFile(id);
     }
 }

@@ -1,6 +1,7 @@
 package hello.board.pagging.repository;
 
 import hello.board.pagging.domain.Board;
+import hello.board.pagging.domain.BoardFile;
 import hello.board.pagging.model.board.SearchDto;
 
 import java.util.List;
@@ -18,4 +19,5 @@ public interface BoardRepository {
      */
     List<Board> findAll(SearchDto params);
     Integer getPageMaxCount();
+    Optional<BoardFile> findByIdWithFile(Long id);
 }

@@ -1,6 +1,8 @@
 package hello.board.pagging.repository;
 
 import hello.board.pagging.domain.Board;
+import hello.board.pagging.domain.BoardFile;
+import hello.board.pagging.domain.File;
 import hello.board.pagging.domain.Member;
 import hello.board.pagging.model.Pagination;
 import hello.board.pagging.model.board.SearchDto;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +25,8 @@ public class BoardRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private FileRepository fileRepository;
 
     @Test
     public void create() {
@@ -169,5 +174,46 @@ public class BoardRepositoryTest {
 
         // then
         Assertions.assertThat(maxCount).isEqualTo(20);
+    }
+
+    @Test
+    public void findByIdWithFile() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter("한국")
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .boardRegdate(LocalDateTime.now())
+                .build();
+
+        boardRepository.save(board);
+
+        List<File> files = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            files.add(File.builder()
+                    .boardId(board.getBoardId())
+                    .uploadFileName("hihi" + i)
+                    .storeFileName("hehe" + i)
+                    .fileRegdate(LocalDateTime.now())
+                    .build());
+        }
+        fileRepository.saveAll(files);
+
+        // when
+        Optional<BoardFile> findBoardFile = boardRepository.findByIdWithFile(board.getBoardId());
+
+        // then
+        BoardFile boardFile = findBoardFile.orElse(null);
+        Assertions.assertThat(boardFile).isNotNull();
     }
 }
