@@ -204,6 +204,7 @@ public class BoardRepositoryTest {
                     .boardId(board.getBoardId())
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
+                    .fileImageYn(true)
                     .fileRegdate(LocalDateTime.now())
                     .build());
         }

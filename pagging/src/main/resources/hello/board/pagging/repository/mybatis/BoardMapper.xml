@@ -61,6 +61,7 @@
             <result column="board_id" property="boardId"/>
             <result column="upload_file_name" property="uploadFileName"/>
             <result column="store_file_name" property="storeFileName"/>
+            <result column="file_image_yn" property="fileImageYn"/>
             <result column="file_regdate" property="fileRegdate"/>
         </collection>
     </resultMap>
@@ -69,7 +70,7 @@
     <select id="findByIdWithFile" parameterType="Long" resultMap="boardFileMap">
         select
             b.board_id, b.member_id, b.board_writer, b.board_title, b.board_content, b.board_regdate, b.board_update_date, b.board_delete_date,
-            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_regdate
+            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_image_yn, f.file_regdate
         from
             board as b inner join file as f
                 on
