@@ -1,7 +1,9 @@
 package hello.board.pagging.model;
 
+import hello.board.pagging.common.code.ImageCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -19,6 +21,27 @@ public class FileStore {
 
     @Value("${file.dir}")
     private String fileDir;
+
+
+    /**
+     * 이미지 파일 .jpeg, .png, .gif 검사 / 파일을 등록하지 않았을 때 통과
+     * @param multipartFiles
+     * @return true = 이미지 파일, false = 이미지 파일 X
+     */
+    public boolean isImageFiles(List<MultipartFile> multipartFiles) {
+        boolean visited = true;
+        for (MultipartFile multipartFile : multipartFiles) {
+            if(multipartFile.isEmpty()) continue; // 파일을 등록하지 않았을 때 통과
+            if(!ObjectUtils.isEmpty(multipartFile.getContentType())) {
+                String contentType = multipartFile.getContentType();
+                if(contentType.contains(ImageCode.JPG.getCode())) continue;
+                if(contentType.contains(ImageCode.PNG.getCode())) continue;
+                if(contentType.contains(ImageCode.GIF.getCode())) continue;
+            }
+            visited = false;
+        }
+        return visited;
+    }
 
     /**
      * 파일 저장 경로 반환
