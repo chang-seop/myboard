@@ -31,4 +31,14 @@ public class MyBatisFileRepository implements FileRepository {
     public List<File> findByBoardId(Long boardId) {
         return fileMapper.findByBoardId(boardId);
     }
+
+    @Override
+    public List<File> findByBoardIdAndFileImageYn(Long boardId, Boolean fileImageYn) {
+        return fileMapper.findByBoardIdAndFileImageYn(boardId, fileImageYn);
+    }
+
+    @Override
+    public Optional<File> findByStoreFileName(String storeFileName) {
+        return fileMapper.findByStoreFileName(storeFileName);
+    }
 }

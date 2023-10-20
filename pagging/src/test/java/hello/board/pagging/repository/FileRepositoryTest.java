@@ -50,6 +50,7 @@ public class FileRepositoryTest {
                 .boardId(board.getBoardId())
                 .uploadFileName("hihi")
                 .storeFileName("hehe")
+                .fileImageYn(true)
                 .fileRegdate(LocalDateTime.now())
                 .build();
 
@@ -89,6 +90,7 @@ public class FileRepositoryTest {
                     .boardId(board.getBoardId())
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
+                    .fileImageYn(true)
                     .fileRegdate(LocalDateTime.now())
                     .build());
         }
@@ -103,7 +105,6 @@ public class FileRepositoryTest {
 
     @Test
     void findByBoardId() {
-        // given
         // given
         Member member = Member.builder()
                 .memberEmail("hello1@naver.com")
@@ -130,6 +131,7 @@ public class FileRepositoryTest {
                     .boardId(board.getBoardId())
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
+                    .fileImageYn(true)
                     .fileRegdate(LocalDateTime.now())
                     .build());
         }
@@ -140,5 +142,100 @@ public class FileRepositoryTest {
 
         // then
         assertThat(findBoards.size()).isEqualTo(5);
+    }
+
+    @Test
+    void findByBoardIdAndFileImageYn() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter("한국")
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .boardRegdate(LocalDateTime.now())
+                .build();
+
+        boardRepository.save(board);
+
+        List<File> files = new ArrayList<>();
+
+        // 이미지 파일 5개 INSERT
+        for (int i = 0; i < 5; i++) {
+            files.add(File.builder()
+                    .boardId(board.getBoardId())
+                    .uploadFileName("hihi" + i)
+                    .storeFileName("hehe" + i)
+                    .fileImageYn(true)
+                    .fileRegdate(LocalDateTime.now())
+                    .build());
+        }
+
+        // 첨부 파일 3개 INSERT
+        for (int i = 0; i < 3; i++) {
+            files.add(File.builder()
+                    .boardId(board.getBoardId())
+                    .uploadFileName("hihi" + i)
+                    .storeFileName("hehe" + i)
+                    .fileImageYn(false)
+                    .fileRegdate(LocalDateTime.now())
+                    .build());
+        }
+        fileRepository.saveAll(files);
+
+        // when 이미지 파일 가져오기
+        List<File> findFile = fileRepository.findByBoardIdAndFileImageYn(board.getBoardId(), true);
+
+        // then
+        assertThat(findFile.size()).isEqualTo(5); // 기대값 : 5개
+    }
+
+    @Test
+    void findByStoreFileName() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .memberRegdate(LocalDateTime.now())
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter("한국")
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .boardRegdate(LocalDateTime.now())
+                .build();
+
+        boardRepository.save(board);
+
+        File saveFile = File.builder()
+                .boardId(board.getBoardId())
+                .uploadFileName("hihi")
+                .storeFileName("hehe")
+                .fileImageYn(true)
+                .fileRegdate(LocalDateTime.now())
+                .build();
+        
+        fileRepository.save(saveFile);
+
+        // when
+        Optional<File> fileOptional = fileRepository.findByStoreFileName(saveFile.getStoreFileName());
+        File file = fileOptional.orElse(null);
+
+        // then
+        assertThat(file).isNotNull();
+        assertThat(saveFile.getUploadFileName()).isEqualTo(file.getUploadFileName());
     }
 }

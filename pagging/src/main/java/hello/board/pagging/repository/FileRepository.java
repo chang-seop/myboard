@@ -1,6 +1,5 @@
 package hello.board.pagging.repository;
 
-import hello.board.pagging.domain.BoardFile;
 import hello.board.pagging.domain.File;
 
 import java.util.List;
@@ -11,4 +10,6 @@ public interface FileRepository {
     void saveAll(List<File> files);
     Optional<File> findById(Long fileId);
     List<File> findByBoardId(Long boardId);
+    List<File> findByBoardIdAndFileImageYn(Long boardId, Boolean fileImageYn);
+    Optional<File> findByStoreFileName(String storeFileName);
 }
