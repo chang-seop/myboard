@@ -4,24 +4,34 @@
 
 <mapper namespace="hello.board.pagging.repository.mybatis.FileMapper">
     <sql id="fileColumns">
-        file_id, board_id, upload_file_name, store_file_name, file_regdate
+        file_id, board_id, upload_file_name, store_file_name, file_image_yn, file_regdate
     </sql>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="fileId">
         insert into
-        file (board_id, upload_file_name, store_file_name, file_regdate)
+        file (board_id, upload_file_name, store_file_name, file_image_yn, file_regdate)
         values
-        (#{boardId}, #{uploadFileName}, #{storeFileName}, #{fileRegdate})
+        (#{boardId}, #{uploadFileName}, #{storeFileName}, #{fileImageYn}, #{fileRegdate})
     </insert>
 
     <insert id="saveAll" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="fileId">
         insert into
-        file (board_id, upload_file_name, store_file_name, file_regdate)
+        file (board_id, upload_file_name, store_file_name, file_image_yn, file_regdate)
         values
         <foreach collection="list" item="item" separator=" , ">
-            (#{item.boardId}, #{item.uploadFileName}, #{item.storeFileName}, #{item.fileRegdate})
+            (#{item.boardId}, #{item.uploadFileName}, #{item.storeFileName}, #{item.fileImageYn}, #{item.fileRegdate})
         </foreach>
     </insert>
+
+    <!-- 찾고자하는 파일 -->
+    <select id="findByBoardIdAndFileImageYn" resultType="File">
+        select
+            <include refid="fileColumns"/>
+        from
+            file
+        where
+            board_id = #{boardId} and file_image_yn = #{fileImageYn}
+    </select>
 
     <select id="findById" parameterType="Long" resultType="File">
         select
@@ -39,5 +49,15 @@
             file
         where
             board_id = #{boardId}
+    </select>
+
+    <select id="findByStoreFileName" parameterType="String" resultType="File">
+        select
+            <include refid="fileColumns"/>
+        from
+            file
+        where
+            store_file_name = #{storeFileName}
+
     </select>
 </mapper>
