@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -46,28 +47,30 @@ public class BoardService {
 
         // 파일 저장
         try {
-            List<UploadFile> uploadFiles = fileStore.storeFiles(boardSaveDto.getImageFiles());
-            if(uploadFiles.size() > 0) {
+            List<UploadFile> imageUploadFiles = fileStore.storeFiles(boardSaveDto.getImageFiles());
+            if(imageUploadFiles.size() > 0) {
                 // 이미지 파일들 저장
                 List<File> files = new ArrayList<>();
-                for (UploadFile uploadFile : uploadFiles) {
+                for (UploadFile uploadFile : imageUploadFiles) {
                     files.add(File.builder()
                                     .boardId(board.getBoardId())
                                     .uploadFileName(uploadFile.getUploadFileName())
                                     .storeFileName(uploadFile.getStoreFileName())
+                                    .fileImageYn(true)
                                     .fileRegdate(LocalDateTime.now())
                                     .build());
                 }
                 fileRepository.saveAll(files);
             }
 
-            UploadFile uploadFile = fileStore.storeFile(boardSaveDto.getAttachFile());
-            if(uploadFile != null) {
-                // 파일 저장
+            UploadFile attachUploadFile = fileStore.storeFile(boardSaveDto.getAttachFile());
+            if(!ObjectUtils.isEmpty(attachUploadFile)) {
+                // 첨부 파일 저장
                 File file = File.builder()
                         .boardId(board.getBoardId())
-                        .uploadFileName(uploadFile.getUploadFileName())
-                        .storeFileName(uploadFile.getStoreFileName())
+                        .uploadFileName(attachUploadFile.getUploadFileName())
+                        .storeFileName(attachUploadFile.getStoreFileName())
+                        .fileImageYn(false)
                         .fileRegdate(LocalDateTime.now())
                         .build();
                 fileRepository.save(file);
