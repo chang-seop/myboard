@@ -11,18 +11,24 @@ import hello.board.pagging.repository.FileRepository;
 import hello.board.pagging.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
@@ -36,6 +42,8 @@ public class BoardController {
     private final BoardService boardService;
     private final FileStore fileStore;
     private final FileRepository fileRepository;
+    @Value("${file.maxSize}")
+    private Integer fileMaxSize;
 
     /**
      * 게시글 보기 뷰
@@ -77,7 +85,9 @@ public class BoardController {
      * @return
      */
     @GetMapping("/writeView")
-    public String boardWriteFrom(@ModelAttribute BoardSaveDto boardSaveDto) {
+    public String boardWriteFrom(@ModelAttribute BoardSaveDto boardSaveDto,
+                                 Model model) {
+        model.addAttribute("fileMaxSize", fileMaxSize);
         return "boardWrite";
     }
 
@@ -91,12 +101,20 @@ public class BoardController {
     @PostMapping("/write")
     public String boardWrite(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
                              @Valid @ModelAttribute BoardSaveDto boardSaveDto,
-                             BindingResult bindingResult) throws IOException {
+                             BindingResult bindingResult,
+                             Model model) throws IOException {
+        model.addAttribute("fileMaxSize", fileMaxSize);
+
         if(bindingResult.hasErrors()) {
             return "boardWrite";
         }
 
-        // 데이터 베이스 저장
+        if(!fileStore.isImageFiles(boardSaveDto.getImageFiles())) {
+            // 파일이 존재하면서 이미지 파일 확장자(jpg, png, gif)가 아닌 경우 글로벌 오류 메세지
+            bindingResult.reject("isNotImage", "이미지 파일은 jpg, png, gif 만 가능합니다.");
+            return "boardWrite";
+        }
+
         boardService.createBoard(boardSaveDto, memberDetailsDto.getMember());
 
         return "redirect:/board";
@@ -109,9 +127,19 @@ public class BoardController {
      */
     @ResponseBody
     @GetMapping("/images/{filename}")
-    public Resource downloadImage(@PathVariable String filename) throws MalformedURLException {
-        return new UrlResource("file:" + fileStore.getFullPath(filename));
-        // 경로에 있는 파일에 접근을 해서 파일을 스트림으로 반환하게 된다.
+    public Resource downloadImage(@PathVariable String filename, HttpServletResponse response) throws IOException {
+        // DB 에 존재하는지 파일 찾기
+        Optional<File> fileOptional = fileRepository.findByStoreFileName(filename);
+        File file = fileOptional.orElse(null);
+
+        if(file != null) {
+            // DB 에 파일이 존재할 경우
+            // 경로에 있는 파일에 접근을 해서 파일을 스트림으로 반환하게 된다.
+            return new UrlResource("file:" + fileStore.getFullPath(filename));
+        }
+
+        response.sendError(404);
+        return null;
     }
 
     /**
