@@ -76,7 +76,7 @@ public class BoardController {
             return "boardDetail";
         }
 
-        return "home";
+        return "redirect:/board";
     }
 
     /**

@@ -53,6 +53,7 @@
         <result column="member_id" property="memberId"/>
         <result column="board_writer" property="boardWriter"/>
         <result column="board_title" property="boardTitle"/>
+        <result column="board_content" property="boardContent"/>
         <result column="board_regdate" property="boardRegdate"/>
         <result column="board_update_date" property="boardUpdateDate"/>
         <result column="board_delete_date" property="boardDeleteDate"/>
