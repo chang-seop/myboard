@@ -7,20 +7,38 @@
 
 <section>
     <div class="container">
-        <div class="py-5 text-center">
+        <div class="card py-5 my-3 text-center">
             <h2>게시글 상세</h2>
         </div>
-        <div th:object="${boardDto}">
+        <div class="card py-5 my-3" th:object="${boardDto}">
 
             <h5 th:text="*{boardTitle}"/>
             <h5 th:text="*{boardContent}"/>
             <h5 th:text="${#temporals.format(boardDto.boardRegdate, '작성일: yyyy년 MM월 dd일 HH시 mm분')}"/>
             <h5 th:text="*{boardWriter}"/>
-            첨부 파일:
+
+            <img th:each="file : ${boardDto.fileList}" th:if="${file.fileImageYn}" th:src="|/board/images/${file.getStoreFileName()}|" width="300" height="300"/>
+
             <div th:each="file : ${boardDto.fileList}">
-                <a th:href="|/board/attach/${file.fileId}|" th:text="${file.getUploadFileName()}"></a>
+                <div class="card py-2 my-3" th:if="${!file.fileImageYn}">
+                    <a th:href="|/board/attach/${file.fileId}|" th:text="${file.getUploadFileName()}"></a>
+                </div>
             </div>
-            <img th:each="file : ${boardDto.fileList}" th:src="|/board/images/${file.getStoreFileName()}|" width="300" height="300"/>
+
+        </div>
+
+        <!-- 댓글란 -->
+        <div class="card py-5 my-3">
+
+        </div>
+
+        <!-- 댓글 입력란 -->
+        <div class="card py-5 my-3">
+
+        </div>
+
+        <!-- 댓글 페이징 -->
+        <div class="paging">
 
         </div>
     </div>
