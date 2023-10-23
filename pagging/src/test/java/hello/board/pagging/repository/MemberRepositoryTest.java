@@ -33,7 +33,6 @@ public class MemberRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         // when
@@ -51,7 +50,6 @@ public class MemberRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -71,7 +69,6 @@ public class MemberRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
