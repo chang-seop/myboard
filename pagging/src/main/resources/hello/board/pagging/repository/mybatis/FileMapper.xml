@@ -19,7 +19,7 @@
         file (board_id, upload_file_name, store_file_name, file_image_yn, file_regdate)
         values
         <foreach collection="list" item="item" separator=" , ">
-            (#{item.boardId}, #{item.uploadFileName}, #{item.storeFileName}, #{item.fileImageYn}, #{item.fileRegdate})
+            (#{item.boardId}, #{item.uploadFileName}, #{item.storeFileName}, #{item.fileImageYn}, now())
         </foreach>
     </insert>
 
@@ -58,6 +58,19 @@
             file
         where
             store_file_name = #{storeFileName}
-
     </select>
+
+    <delete id="deleteById" parameterType="Long">
+        delete from
+            file as f
+        where
+            f.file_id = #{fileId}
+    </delete>
+
+    <delete id="deleteByStoreFileName" parameterType="String">
+        delete from
+            file as f
+        where
+            f.store_file_name = #{storeFileName}
+    </delete>
 </mapper>

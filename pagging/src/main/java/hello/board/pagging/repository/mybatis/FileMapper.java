@@ -15,4 +15,6 @@ public interface FileMapper {
     List<File> findByBoardId(Long boardId);
     List<File> findByBoardIdAndFileImageYn(@Param("boardId") Long boardId, @Param("fileImageYn") Boolean fileImageYn); // true == 이미지파일, false == 첨부파일
     Optional<File> findByStoreFileName(String storeFileName);
+    void deleteById(Long fileId);
+    void deleteByStoreFileName(String storeFileName);
 }

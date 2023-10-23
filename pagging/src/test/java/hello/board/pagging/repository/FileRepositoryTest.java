@@ -31,7 +31,6 @@ public class FileRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -41,7 +40,6 @@ public class FileRepositoryTest {
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
-                .boardRegdate(LocalDateTime.now())
                 .build();
 
         boardRepository.save(board);
@@ -51,7 +49,6 @@ public class FileRepositoryTest {
                 .uploadFileName("hihi")
                 .storeFileName("hehe")
                 .fileImageYn(true)
-                .fileRegdate(LocalDateTime.now())
                 .build();
 
         // when
@@ -69,7 +66,6 @@ public class FileRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -79,7 +75,6 @@ public class FileRepositoryTest {
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
-                .boardRegdate(LocalDateTime.now())
                 .build();
 
         boardRepository.save(board);
@@ -91,7 +86,6 @@ public class FileRepositoryTest {
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(true)
-                    .fileRegdate(LocalDateTime.now())
                     .build());
         }
 
@@ -110,7 +104,6 @@ public class FileRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -120,7 +113,6 @@ public class FileRepositoryTest {
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
-                .boardRegdate(LocalDateTime.now())
                 .build();
 
         boardRepository.save(board);
@@ -132,7 +124,6 @@ public class FileRepositoryTest {
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(true)
-                    .fileRegdate(LocalDateTime.now())
                     .build());
         }
         fileRepository.saveAll(files);
@@ -151,7 +142,6 @@ public class FileRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -161,7 +151,6 @@ public class FileRepositoryTest {
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
-                .boardRegdate(LocalDateTime.now())
                 .build();
 
         boardRepository.save(board);
@@ -175,7 +164,6 @@ public class FileRepositoryTest {
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(true)
-                    .fileRegdate(LocalDateTime.now())
                     .build());
         }
 
@@ -186,7 +174,6 @@ public class FileRepositoryTest {
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(false)
-                    .fileRegdate(LocalDateTime.now())
                     .build());
         }
         fileRepository.saveAll(files);
@@ -205,7 +192,6 @@ public class FileRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -215,7 +201,6 @@ public class FileRepositoryTest {
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
-                .boardRegdate(LocalDateTime.now())
                 .build();
 
         boardRepository.save(board);
@@ -225,7 +210,6 @@ public class FileRepositoryTest {
                 .uploadFileName("hihi")
                 .storeFileName("hehe")
                 .fileImageYn(true)
-                .fileRegdate(LocalDateTime.now())
                 .build();
         
         fileRepository.save(saveFile);
@@ -237,5 +221,79 @@ public class FileRepositoryTest {
         // then
         assertThat(file).isNotNull();
         assertThat(saveFile.getUploadFileName()).isEqualTo(file.getUploadFileName());
+    }
+
+    @Test
+    void deleteById() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter("한국")
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .build();
+
+        boardRepository.save(board);
+
+        File saveFile = File.builder()
+                .boardId(board.getBoardId())
+                .uploadFileName("hihi")
+                .storeFileName("hehe")
+                .fileImageYn(true)
+                .build();
+
+        fileRepository.save(saveFile);
+
+        // when
+        fileRepository.deleteById(saveFile.getFileId());
+
+        // then
+        Optional<File> findFile = fileRepository.findById(saveFile.getFileId());
+        assertThat(findFile.isEmpty()).isTrue();
+    }
+
+    @Test
+    void deleteByStoreFileName() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter("한국")
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .build();
+
+        boardRepository.save(board);
+
+        File saveFile = File.builder()
+                .boardId(board.getBoardId())
+                .uploadFileName("hihi")
+                .storeFileName("hehe")
+                .fileImageYn(true)
+                .build();
+
+        fileRepository.save(saveFile);
+
+        // when
+        fileRepository.deleteByStoreFileName("hehe");
+
+        // then
+        Optional<File> findFile = fileRepository.findById(saveFile.getFileId());
+        assertThat(findFile.isEmpty()).isTrue();
     }
 }

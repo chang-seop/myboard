@@ -12,4 +12,6 @@ public interface FileRepository {
     List<File> findByBoardId(Long boardId);
     List<File> findByBoardIdAndFileImageYn(Long boardId, Boolean fileImageYn);
     Optional<File> findByStoreFileName(String storeFileName);
+    void deleteById(Long fileId);
+    void deleteByStoreFileName(String storeFileName);
 }

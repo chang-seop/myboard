@@ -41,4 +41,14 @@ public class MyBatisFileRepository implements FileRepository {
     public Optional<File> findByStoreFileName(String storeFileName) {
         return fileMapper.findByStoreFileName(storeFileName);
     }
+
+    @Override
+    public void deleteById(Long fileId) {
+        fileMapper.deleteById(fileId);
+    }
+
+    @Override
+    public void deleteByStoreFileName(String storeFileName) {
+        fileMapper.deleteByStoreFileName(storeFileName);
+    }
 }
