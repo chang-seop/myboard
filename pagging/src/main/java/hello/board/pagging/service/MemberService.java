@@ -34,7 +34,6 @@ public class MemberService {
                 .memberNm(memberDto.getMemberNm())
                 .memberEmail(memberDto.getMemberEmail())
                 .memberPwd(passwordEncoder.encode(memberDto.getMemberPwd())) // 암호화 처리
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);

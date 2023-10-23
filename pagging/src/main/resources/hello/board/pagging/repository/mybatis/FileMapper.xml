@@ -11,7 +11,7 @@
         insert into
         file (board_id, upload_file_name, store_file_name, file_image_yn, file_regdate)
         values
-        (#{boardId}, #{uploadFileName}, #{storeFileName}, #{fileImageYn}, #{fileRegdate})
+        (#{boardId}, #{uploadFileName}, #{storeFileName}, #{fileImageYn}, now())
     </insert>
 
     <insert id="saveAll" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="fileId">

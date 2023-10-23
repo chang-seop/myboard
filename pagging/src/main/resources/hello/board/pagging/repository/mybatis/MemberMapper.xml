@@ -7,7 +7,7 @@
     <!-- 멤버 등록 -->
     <insert id="save" useGeneratedKeys="true" keyProperty="memberId">
         insert into member (member_nm, member_email, member_pwd, member_regdate)
-        values (#{memberNm}, #{memberEmail}, #{memberPwd}, #{memberRegdate})
+        values (#{memberNm}, #{memberEmail}, #{memberPwd}, now())
     </insert>
 
     <!-- 멤버 권한 등록 -->
