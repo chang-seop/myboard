@@ -7,5 +7,5 @@ create table reply (
     reply_content      varchar(1000) not null,
     reply_regdate      timestamp not null,
     primary key (reply_id),
-    foreign key (board_id) references board (board_id)
+    foreign key (board_id) references board (board_id) on delete cascade
 );
