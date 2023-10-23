@@ -13,7 +13,7 @@
                 <div th:if="${#fields.hasGlobalErrors()}">
                     <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
                 </div>
-                <input class="my-2" type="text" title="아이디 입력" placeholder="아이디" th:field="*{memberEmail}">
+                <input class="my-2" type="text" title="아이디 입력" placeholder="이메일" th:field="*{memberEmail}">
                 <input class="my-2" type="password" title="비밀번호 입력" placeholder="비밀번호" th:field="*{memberPwd}">
                 <button class="my-2" type="submit">로그인</button>
             </div>
