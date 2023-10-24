@@ -26,7 +26,7 @@ public class MemberService {
         // email 이 DB 에 중복되는지 확인
         Optional<Member> findMember = memberRepository.findByEmail(memberDto.getMemberEmail());
         if(findMember.isPresent()) {
-            throw new DuplicateException("이미 존재하는 이메일");
+            throw new DuplicateException("이미 존재하는 이메일입니다.");
         }
 
         // 저장
