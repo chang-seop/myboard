@@ -1,5 +1,6 @@
 package hello.board.pagging.service;
 
+import hello.board.pagging.common.exception.DuplicateException;
 import hello.board.pagging.domain.Authority;
 import hello.board.pagging.domain.Member;
 import hello.board.pagging.model.Role;
@@ -25,8 +26,7 @@ public class MemberService {
         // email 이 DB 에 중복되는지 확인
         Optional<Member> findMember = memberRepository.findByEmail(memberDto.getMemberEmail());
         if(findMember.isPresent()) {
-            // TODO : Exception 정의 : 이미 존재하는 이메일입니다.
-            throw new RuntimeException("이미 존재하는 이메일");
+            throw new DuplicateException("이미 존재하는 이메일");
         }
 
         // 저장

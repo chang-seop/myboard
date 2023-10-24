@@ -1,5 +1,6 @@
 package hello.board.pagging.controller;
 
+import hello.board.pagging.common.exception.DuplicateException;
 import hello.board.pagging.model.member.MemberLoginDto;
 import hello.board.pagging.model.member.MemberSaveDto;
 import hello.board.pagging.service.MemberService;
@@ -27,7 +28,9 @@ public class MemberController {
                             Errors errors,
                             Model model) {
         if(fail) {
-            errors.reject("loginFalse", "아이디 또는 비밀번호가 일치하지 않습니다.");
+            // MemberCustomLoginFailHandler 에서 Redirect
+            // 로그인 실패 (글로벌 오류 메세지)
+            errors.reject("loginFail", "아이디 또는 비밀번호가 일치하지 않습니다.");
         }
 
         return "login";
@@ -53,9 +56,9 @@ public class MemberController {
         try{
             memberService.save(memberSaveDto);
         }
-        catch(RuntimeException e) {
-            // 중복된 이메일 일 경우
-            bindingResult.reject("duplicateEmail", "중복된 이메일입니다.");
+        catch(DuplicateException e) {
+            // 중복된 이메일 일 경우 (글로벌 오류 메세지)
+            bindingResult.reject("duplicateEmail", e.getMessage());
             return "signup";
         }
 
