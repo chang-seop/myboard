@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionController {
     @ExceptionHandler(BadRequestException.class)
-    String runtimeExceptionHandle(BadRequestException e, Model model) {
+    String badRequestExceptionHandle(BadRequestException e, Model model) {
         model.addAttribute("error", e.getMessage());
         return "error/404";
     }
