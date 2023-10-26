@@ -35,7 +35,6 @@ public class BoardRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -45,7 +44,6 @@ public class BoardRepositoryTest {
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
-                .boardRegdate(LocalDateTime.now())
                 .build();
 
         // when
@@ -62,7 +60,6 @@ public class BoardRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -72,7 +69,6 @@ public class BoardRepositoryTest {
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
-                .boardRegdate(LocalDateTime.now())
                 .build();
 
         Board createdBoard = boardRepository.save(board);
@@ -91,7 +87,6 @@ public class BoardRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
         memberRepository.save(member);
 
@@ -101,7 +96,6 @@ public class BoardRepositoryTest {
                     .memberId(member.getMemberId())
                     .boardTitle("제목" + i)
                     .boardContent("글" + i)
-                    .boardRegdate(LocalDateTime.now())
                     .build();
             boardRepository.save(board);
         }
@@ -121,7 +115,6 @@ public class BoardRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
         memberRepository.save(member);
 
@@ -131,7 +124,6 @@ public class BoardRepositoryTest {
                     .memberId(member.getMemberId())
                     .boardTitle("제목" + i)
                     .boardContent("글" + i)
-                    .boardRegdate(LocalDateTime.now())
                     .build();
             boardRepository.save(board);
         }
@@ -154,7 +146,6 @@ public class BoardRepositoryTest {
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
         memberRepository.save(member);
 
@@ -164,7 +155,6 @@ public class BoardRepositoryTest {
                     .memberId(member.getMemberId())
                     .boardTitle("제목" + i)
                     .boardContent("글" + i)
-                    .boardRegdate(LocalDateTime.now())
                     .build();
             boardRepository.save(board);
         }
@@ -177,13 +167,79 @@ public class BoardRepositoryTest {
     }
 
     @Test
+    void deleteSetupByBoardIdAndMemberId() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter("한국")
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .build();
+        boardRepository.save(board);
+
+        // when
+        boardRepository.deleteSetupByBoardIdAndMemberId(board.getBoardId(), member.getMemberId());
+
+        // then
+        Optional<Board> findBoard = boardRepository.findById(board.getBoardId());
+
+        Board deleteBoard = findBoard.orElse(null);
+        assert deleteBoard != null;
+        Assertions.assertThat(deleteBoard.getBoardDeleteDate()).isNotNull();
+    }
+
+    @Test
+    void updateByBoard() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter("한국")
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .build();
+        boardRepository.save(board);
+
+        Board updateBoard = Board.builder()
+                .boardId(board.getBoardId())
+                .boardWriter("한국")
+                .memberId(member.getMemberId())
+                .boardTitle("제목 변경")
+                .boardContent("글 변경")
+                .build();
+
+        // when
+        boardRepository.updateByBoard(updateBoard);
+
+        // then
+        Optional<Board> findBoard = boardRepository.findById(board.getBoardId());
+        Board updatedBoard = findBoard.orElse(null);
+        assert updatedBoard != null;
+        Assertions.assertThat(updatedBoard.getBoardTitle()).isEqualTo("제목 변경");
+        Assertions.assertThat(updatedBoard.getBoardContent()).isEqualTo("글 변경");
+        Assertions.assertThat(updatedBoard.getBoardUpdateDate()).isNotNull();
+    }
+
+    @Test
     public void findByIdWithFile() {
         // given
         Member member = Member.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
-                .memberRegdate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);
@@ -193,7 +249,6 @@ public class BoardRepositoryTest {
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
-                .boardRegdate(LocalDateTime.now())
                 .build();
 
         boardRepository.save(board);
@@ -205,7 +260,6 @@ public class BoardRepositoryTest {
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(true)
-                    .fileRegdate(LocalDateTime.now())
                     .build());
         }
         fileRepository.saveAll(files);

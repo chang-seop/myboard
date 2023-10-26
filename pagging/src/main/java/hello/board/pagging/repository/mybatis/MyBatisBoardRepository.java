@@ -45,4 +45,14 @@ public class MyBatisBoardRepository implements BoardRepository {
     public Optional<BoardFile> findByIdWithFile(Long id) {
         return boardMapper.findByIdWithFile(id);
     }
+
+    @Override
+    public void deleteSetupByBoardIdAndMemberId(Long boardId, Long memberId) {
+        boardMapper.deleteSetupByBoardIdAndMemberId(boardId, memberId);
+    }
+
+    @Override
+    public void updateByBoard(Board board) {
+        boardMapper.updateByBoard(board);
+    }
 }
