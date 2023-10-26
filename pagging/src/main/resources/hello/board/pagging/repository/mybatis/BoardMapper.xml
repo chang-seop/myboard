@@ -11,7 +11,7 @@
         insert into
             board (member_id, board_writer, board_title, board_content, board_regdate)
         values
-            (#{memberId}, #{boardWriter}, #{boardTitle}, #{boardContent}, #{boardRegdate})
+            (#{memberId}, #{boardWriter}, #{boardTitle}, #{boardContent}, now())
     </insert>
 
     <select id="findByMemberId" resultType="Board">
@@ -32,20 +32,26 @@
             board_id = #{boardId}
     </select>
 
+    <!-- 페이지네이션 -->
+    <!-- board_delete_date 가 존재 시 삭제 된 게시글이므로 포함하지 않는다. -->
     <select id="findAll" parameterType="hello.board.pagging.model.board.SearchDto" resultType="Board">
         select
             <include refid="boardColumns"/>
         from
-            board
+            board as b
+        where
+            b.board_delete_date is null
         order by
-            board_id desc limit #{pagination.limitStart}, #{recordSize}
+            b.board_id desc limit #{pagination.limitStart}, #{recordSize}
     </select>
 
     <select id="getPageMaxCount" resultType="Integer">
         select
             count(*)
         from
-            board
+            board as b
+        where
+            b.board_delete_date is null
     </select>
 
     <resultMap id="boardFileMap" type="BoardFile">
@@ -73,10 +79,34 @@
             b.board_id, b.member_id, b.board_writer, b.board_title, b.board_content, b.board_regdate, b.board_update_date, b.board_delete_date,
             f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_image_yn, f.file_regdate
         from
-            board as b inner join file as f
+            board as b
+                inner join
+                    file as f
                 on
                     b.board_id = f.board_id
         where
             b.board_id = #{id}
     </select>
+
+    <!-- DELETE -->
+    <delete id="deleteSetupByBoardIdAndMemberId" parameterType="Long">
+        update
+            board as b
+        set
+            b.board_delete_date = now()
+        where
+            b.board_id = #{boardId} and b.member_id = #{memberId}
+    </delete>
+
+    <!-- UPDATE -->
+    <update id="updateByBoard" parameterType="Board">
+        update
+            board as b
+        set
+            b.board_title = #{boardTitle},
+            b.board_content = #{boardContent},
+            b.board_update_date = now()
+        where
+            b.board_id = #{boardId} and b.member_id = #{memberId}
+    </update>
 </mapper>
