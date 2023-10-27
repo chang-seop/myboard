@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html th:replace="~{layouts/homeLayout :: homeLayout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>게시글 수정</title>
+</head>
+<body>
+
+<section>
+    <div class="container">
+        <h2> 게시글 수정 </h2>
+
+        <form method="post" enctype="multipart/form-data" th:action="@{/board/modify}" th:object="${boardModifyDto}">
+            <div th:if="${#fields.hasGlobalErrors()}">
+                <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+            </div>
+
+            <!-- (히든 값) boardId -->
+            <input type="hidden" th:field="*{boardId}">
+
+            <div class="form-group my-2">
+                <label for="title">제목</label>
+                <input type="text" id="title" title="제목 입력" placeholder="글 제목" th:field="*{boardTitle}">
+                <div class="field-error" th:errors="*{boardTitle}"></div>
+            </div>
+
+            <div class="form-group my-2">
+                <label for="content">내용</label>
+                <textarea class="form-control" id="content" rows="10" placeholder="글 내용" th:field="*{boardContent}"></textarea>
+                <div class="field-error" th:errors="*{boardContent}"></div>
+            </div>
+
+            <!-- (히든 값) 파일 업로드 시 변경 된 내역을 확인하기 위해 사용 -->
+            <div>
+                <p name="attachTag">등록된 첨부파일</p>
+                <div class="d-inline form-group my-2" th:each="file, fileStat : ${fileList}" th:if="${!file.fileImageYn}">
+                    <div>
+                        <span class="text-primary" name="attachFileName" th:text="${file.uploadFileName}"></span>
+                        <input type="hidden" th:value="${file.fileId}" th:name="|fileIdList[${fileStat.index}]|">
+                        <button type="button" name="attachFileNameButton" class="btn-close" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div name="uploadAttachFileParent">
+
+            </div>
+
+            <div>
+                <p name="imageTag">등록된 이미지 파일</p>
+                <div class="d-inline form-group my-2" th:each="file, fileStat : ${fileList}" th:if="${file.fileImageYn}">
+                    <div>
+                        <span class="text-primary" name="|imageFileNames fileId${fileStat.index}|" th:text="${file.uploadFileName}"></span>
+                        <input type="hidden" th:value="${file.fileId}" th:name="|fileIdList[${fileStat.index}]|">
+                        <button type="button" name="imageFileNamesButton" class="btn-close" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div name="uploadImageFilesParent">
+
+            </div>
+
+            <!-- /* 첨부 파일 용량 체크 로직 */ -->
+            <th:block layout:fragment="script">
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                        // 문서가 모두 로드 된 뒤 실행
+                        $(document).ready(function() {
+                            // 업로드한 첨부파일이 없을 경우 input 생성
+                            if ($("button[name=attachFileNameButton]").length == 0) {
+                                $("div[name=uploadAttachFileParent]").html(
+                                    '<div name="uploadAttachFileParent">' +
+                                        '<div name="uploadAttachFileChild">' +
+                                            '<div class="form-group my-2">' +
+                                                '<label for="attachFile">첨부 파일</label>' +
+                                                '<input type="file" id="attachFile" name="attachFile">' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>'
+                                )
+
+                                // 등록된 첨부파일 p 태그 삭제
+                                $("p[name=attachTag]").remove();
+                            }
+
+                            // 업로드한 이미지파일이 3개 미만일 경우 input 생성
+                            if ($("button[name=imageFileNamesButton]").length < 3) {
+                                $("div[name=uploadImageFilesParent]").html(
+                                    '<div name="uploadImageFilesParent">' +
+                                        '<div name="uploadImageFilesChild">' +
+                                            '<div class="form-group my-2">' +
+                                                '<label for="imageFiles">이미지 파일</label>' +
+                                                '<input type="file" accept="image/gif, image/jpeg, image/png" multiple="multiple" name="imageFiles" id="imageFiles">' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>'
+                                );
+                            }
+
+                            // 업로드한 이미지파일이 없을 경우
+                            if ($("button[name=imageFileNamesButton]").length == 0) {
+                                // 등록된 이미지파일 p 태그 삭제
+                                $("p[name=imageTag]").remove();
+                            }
+                        });
+
+                        // 첨부 파일 onclick 이벤트
+                        $(document).on("change", "input[name=attachFile]", function() {
+                            if (this.files && this.files[0]) {
+                                const fileMaxSize = [[ ${fileMaxSize} ]]; // maxSize 값 가져오기
+                                var maxSize = fileMaxSize * 1024 * 1024;
+                                var fileSize = this.files[0].size;
+
+                                if(fileSize > maxSize){
+                                    alert("첨부파일 사이즈는 " + fileMaxSize  + "MB 이내로 등록 가능합니다.");
+                                    $(this).val('');
+                                    return false;
+                                }
+                            }
+                        });
+
+                        // 첨부 파일 삭제 click 이벤트
+                        // 업로드한 첨부파일이 없을 경우 input 생성
+                        $("button[name=attachFileNameButton]").click(function() {
+                            $(this).parent().remove();
+                            $("div[name=uploadAttachFileParent]").html(
+                                '<div name="uploadAttachFileParent">' +
+                                    '<div name="uploadAttachFileChild">' +
+                                        '<div class="form-group my-2">' +
+                                            '<label for="attachFile">첨부 파일</label>' +
+                                            '<input type="file" id="attachFile" name="attachFile">' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>'
+                            )
+
+                            // 등록된 첨부파일 p 태그 삭제
+                            $("p[name=attachTag]").remove();
+                        });
+
+
+
+                        // 이미지 파일 동적 onclick 이벤트
+                        $(document).on("change", "input[name=imageFiles]", function() {
+                            var buttonCount = $("button[name=imageFileNamesButton]").length;
+                            var fileCount = this.files.length;
+
+                            if ((buttonCount + fileCount) > 3) {
+                                 alert("이미지 업로드의 개수는 3개까지 가능합니다.");
+                                 $(this).val('');
+                                 return false;
+                            }
+
+                            const fileMaxSize = [[ ${fileMaxSize} ]]; // maxSize 값 가져오기
+
+                            for(var i = 0; i < this.files.length; i++) {
+                                var maxSize = fileMaxSize * 1024 * 1024;
+                                var fileSize = this.files[i].size;
+
+                                if(fileSize > maxSize) {
+                                    alert("이미지파일 사이즈는 " + fileMaxSize  + "MB 이내로 등록 가능합니다.");
+                                    $(this).val('');
+                                    return false;
+                                }
+                            }
+                        });
+
+                        // 이미지 파일 삭제 click 이벤트
+                        $("button[name=imageFileNamesButton]").each(function(i) {
+                            $(this).click(function() {
+                                // 부모 삭제
+                                $(this).parent().remove();
+
+                                if ($("button[name=imageFileNamesButton]").length < 3) {
+                                    $("div[name=uploadImageFilesParent]").html(
+                                        '<div name="uploadImageFilesParent">' +
+                                            '<div name="uploadImageFilesChild">' +
+                                                '<div class="form-group my-2">' +
+                                                    '<label for="imageFiles">이미지 파일</label>' +
+                                                    '<input type="file" accept="image/gif, image/jpeg, image/png" multiple="multiple" name="imageFiles" id="imageFiles">' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</div>'
+                                    );
+                                }
+
+                                if ($("button[name=imageFileNamesButton]").length == 0) {
+                                    // 등록된 이미지파일 p 태그 삭제
+                                    $("p[name=imageTag]").remove();
+                                }
+                            });
+                        });
+
+                    /*]]>*/
+                </script>
+            </th:block>
+
+            <button type="submit" class="btn btn-primary my-2">수정</button>
+        </form>
+
+    </div>
+</section>
+
+</body>
+</html>
