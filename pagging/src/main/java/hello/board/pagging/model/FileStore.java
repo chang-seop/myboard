@@ -1,6 +1,8 @@
 package hello.board.pagging.model;
 
 import hello.board.pagging.common.code.ImageCode;
+import hello.board.pagging.common.exception.CustomFileUploadException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -16,6 +18,7 @@ import java.util.UUID;
  * FileStore - 파일 저장과 관련된 업무 처리
  * 멀티파트 파일을 서버에 저장하는 역할을 담당한다.
  */
+@Slf4j
 @Component
 public class FileStore {
 
@@ -30,17 +33,35 @@ public class FileStore {
      */
     public boolean isImageFiles(List<MultipartFile> multipartFiles) {
         boolean visited = true;
-        for (MultipartFile multipartFile : multipartFiles) {
-            if(multipartFile.isEmpty()) continue; // 파일을 등록하지 않았을 때 통과
-            if(!ObjectUtils.isEmpty(multipartFile.getContentType())) {
-                String contentType = multipartFile.getContentType();
-                if(contentType.contains(ImageCode.JPG.getCode())) continue;
-                if(contentType.contains(ImageCode.PNG.getCode())) continue;
-                if(contentType.contains(ImageCode.GIF.getCode())) continue;
+        if(!ObjectUtils.isEmpty(multipartFiles)) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                if(multipartFile.isEmpty()) continue; // 파일을 등록하지 않았을 때 통과
+                if(!ObjectUtils.isEmpty(multipartFile.getContentType())) {
+                    String contentType = multipartFile.getContentType();
+                    if(contentType.contains(ImageCode.JPG.getCode())) continue;
+                    if(contentType.contains(ImageCode.PNG.getCode())) continue;
+                    if(contentType.contains(ImageCode.GIF.getCode())) continue;
+                }
+                visited = false;
             }
-            visited = false;
         }
         return visited;
+    }
+
+    /**
+     * 파일 삭제
+     * 파일 삭제를 모두 성공하였을 때 true
+     * 파일 삭제가 안되었을 때 false
+     */
+    public boolean removeFiles(List<hello.board.pagging.domain.File> fileList) {
+        for (hello.board.pagging.domain.File file : fileList) {
+            File removeFile = new File(getFullPath(file.getStoreFileName()));
+            log.info("파일삭제 : {}, {}", file.getFileId(), file.getStoreFileName());
+            if (!removeFile.delete()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -51,13 +72,15 @@ public class FileStore {
     }
 
     /**
-     * 요구사항에서 이미지 파일은 여러개를 업로드가 가능하다
+     * 이미지 파일은 여러개를 업로드가 가능하다
      */
     public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
         List<UploadFile> storeFileResult = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFiles) {
-            if(!multipartFile.isEmpty()) {
-                storeFileResult.add(storeFile(multipartFile));
+        if(!ObjectUtils.isEmpty(multipartFiles)) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                if(!multipartFile.isEmpty()) {
+                    storeFileResult.add(storeFile(multipartFile));
+                }
             }
         }
         return storeFileResult;
@@ -67,7 +90,11 @@ public class FileStore {
      * 멀티 파트 파일을 가지고 파일을 저장 후 UploadFile 로 만든 후 반환
      */
     public UploadFile storeFile(MultipartFile multipartFile) throws IOException {
-        if(multipartFile.isEmpty()) {
+        if(ObjectUtils.isEmpty(multipartFile)) { // null 체크
+            return null;
+        }
+
+        if(multipartFile.isEmpty()) { // empty 체크
             return null;
         }
 
