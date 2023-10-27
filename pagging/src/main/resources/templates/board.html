@@ -44,7 +44,7 @@
                 // 1. 필수 파라미터가 없는 경우, 페이지 번호(페이지네이션) HTML 을 제거(초기화)한 후 로직 종료
                 if ( !pagination || !params ) {
                     document.querySelector('.paging').innerHTML = '';
-                    throw new Error('Missing required parameters...');
+                    return;
                 }
 
                 // 2. 렌더링 할 HTML 을 저장할 변수
@@ -104,11 +104,13 @@
     </th:block>
 
     <!--/* 리스트 데이터 렌더링 영역 */-->
-    <div class="card w-75 p-3 my-2" style="float: none; margin:0 auto;" th:each="board : ${response.list}">
-        <a class="card-header" th:href="@{/board/{param1}(param1=${board.boardId})}" th:text="${board.boardTitle}"></a>
-        <div class="card-body">
-            <span th:text="${board.boardWriter}">작성자</span>
-            <span th:text="${#temporals.format(board.boardRegdate, 'yyyy년 MM월 dd일 HH시 mm분')}">날짜</span>
+    <div id="list">
+        <div class="card w-75 p-3 my-2" style="float: none; margin:0 auto;" th:each="board : ${response.list}">
+            <a class="card-header" th:href="@{/board/{param1}(param1=${board.boardId})}" th:text="${board.boardTitle}"></a>
+            <div class="card-body">
+                <span th:text="${board.boardWriter}">작성자</span>
+                <span th:text="${#temporals.format(board.boardRegdate, 'yyyy년 MM월 dd일 HH시 mm분')}">날짜</span>
+            </div>
         </div>
     </div>
 

@@ -1,11 +1,9 @@
 package hello.board.pagging.controller;
 
+import hello.board.pagging.common.exception.BadRequestException;
 import hello.board.pagging.domain.File;
 import hello.board.pagging.model.FileStore;
-import hello.board.pagging.model.board.BoardDto;
-import hello.board.pagging.model.board.BoardSaveDto;
-import hello.board.pagging.model.board.PagingResponseDto;
-import hello.board.pagging.model.board.SearchDto;
+import hello.board.pagging.model.board.*;
 import hello.board.pagging.model.member.MemberDetailsDto;
 import hello.board.pagging.repository.FileRepository;
 import hello.board.pagging.service.BoardService;
@@ -15,23 +13,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -47,9 +44,6 @@ public class BoardController {
 
     /**
      * 게시글 보기 뷰
-     * @param params
-     * @param model
-     * @return
      */
     @GetMapping()
     public String boardForm(@ModelAttribute("params") final SearchDto params,
@@ -61,17 +55,16 @@ public class BoardController {
 
     /**
      * 게시글 상세 보기 뷰
-     * @param id
-     * @param model
-     * @return
      */
-    @GetMapping("/{id}")
-    public String boardDetailForm(@PathVariable("id") Long id,
+    @GetMapping("/{boardId}")
+    public String boardDetailForm(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
+                                  @PathVariable("boardId") Long boardId,
                                   Model model) {
 
-        BoardDto boardDto = boardService.findBoardAndFiles(id);
+        BoardDto boardDto = boardService.findBoardAndFiles(boardId);
 
         if(boardDto != null) {
+            model.addAttribute("AuthMemberId", memberDetailsDto.getMember().getMemberId()); // 삭제 하기 위한 model 속성
             model.addAttribute("boardDto", boardDto);
             return "boardDetail";
         }
@@ -81,8 +74,6 @@ public class BoardController {
 
     /**
      * 게시글 쓰기 뷰
-     * @param boardSaveDto
-     * @return
      */
     @GetMapping("/writeView")
     public String boardWriteFrom(@ModelAttribute BoardSaveDto boardSaveDto,
@@ -93,16 +84,13 @@ public class BoardController {
 
     /**
      * 게시글 작성 및 파일 업로드
-     * @param memberDetailsDto
-     * @param boardSaveDto
-     * @param bindingResult
-     * @return
      */
     @PostMapping("/write")
     public String boardWrite(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
                              @Valid @ModelAttribute BoardSaveDto boardSaveDto,
                              BindingResult bindingResult,
-                             Model model) throws IOException {
+                             Model model) {
+
         model.addAttribute("fileMaxSize", fileMaxSize);
 
         if(bindingResult.hasErrors()) {
@@ -115,7 +103,93 @@ public class BoardController {
             return "boardWrite";
         }
 
+        if(boardSaveDto.getImageFiles().size() > 3) {
+            // 이미지 파일이 3개 이상일 경우 글로벌 오류 메세지
+            bindingResult.reject("isManyImage", "이미지 파일은 최대 3개까지 가능합니다.");
+            return "boardWrite";
+        }
+
         boardService.createBoard(boardSaveDto, memberDetailsDto.getMember());
+
+        return "redirect:/board";
+    }
+
+    /**
+     * 게시글 수정 폼,
+     * 수정할 수 없는 권한 언체크 예외 throw
+     */
+    @GetMapping("/modifyView/{boardId}")
+    public String boardModifyForm(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
+                                  @ModelAttribute BoardModifyDto boardModifyDto,
+                                  @PathVariable("boardId") Long boardId,
+                                  Model model) {
+
+        BoardDto boardAndFiles = boardService.findBoardAndFiles(boardId);
+
+        // 게시글 글쓴이가 아닐 경우 Exception
+        if(!boardAndFiles.getMemberId().equals(memberDetailsDto.getMember().getMemberId())) {
+            throw new BadRequestException("수정할 수 없는 권한입니다.");
+        }
+
+        modifyViewModelAdd(model, boardAndFiles, boardModifyDto);
+
+        return "boardModify";
+    }
+
+    /**
+     * 게시글 수정
+     */
+    @PostMapping("/modify")
+    public String boardModify(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
+                              @Valid @ModelAttribute BoardModifyDto boardModifyDto,
+                              BindingResult bindingResult,
+                              Model model) {
+
+        BoardDto boardAndFiles = boardService.findBoardAndFiles(boardModifyDto.getBoardId());
+
+        if(bindingResult.hasErrors()) {
+            modifyViewModelAdd(model, boardAndFiles, boardModifyDto);
+            return "boardModify";
+        }
+
+        if(!fileStore.isImageFiles(boardModifyDto.getImageFiles())){
+            // 파일이 존재하면서 이미지 파일 확장자(jpg, png, gif)가 아닌 경우 글로벌 오류 메세지
+            bindingResult.reject("isNotImage", "이미지 파일은 jpg, png, gif 만 가능합니다.");
+            modifyViewModelAdd(model, boardAndFiles, boardModifyDto);
+            return "boardModify";
+        }
+
+        // TODO: BoardFileFacade 를 만든 후 책임을 전가하게 리팩토링 한다.
+        List<File> deletedFileList = boardService.updateBoard(boardModifyDto, memberDetailsDto.getMember());
+
+        if(!fileStore.removeFiles(deletedFileList)) {
+            throw new BadRequestException("파일을 삭제하지 못했습니다.");
+        }
+
+        return "redirect:/board";
+    }
+
+    private void modifyViewModelAdd( Model model, BoardDto boardAndFiles, BoardModifyDto boardModifyDto) {
+        boardModifyDto.setBoardId(boardAndFiles.getBoardId());
+        boardModifyDto.setBoardTitle(boardAndFiles.getBoardTitle());
+        boardModifyDto.setBoardContent(boardAndFiles.getBoardContent());
+
+        List<File> fileList = null;
+        if(!ObjectUtils.isEmpty(boardAndFiles.getFileList())) {
+            fileList = boardAndFiles.getFileList();
+        }
+
+        model.addAttribute("fileList", fileList);
+        model.addAttribute("fileMaxSize", fileMaxSize);
+    }
+
+    /**
+     * 게시글 삭제
+     */
+    @PostMapping("/remove")
+    public String boardRemove(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
+                              @ModelAttribute BoardDeleteDto boardDeleteDto) {
+        boardService.deleteSetupBoard(boardDeleteDto.getBoardId(), memberDetailsDto.getMember());
 
         return "redirect:/board";
     }
