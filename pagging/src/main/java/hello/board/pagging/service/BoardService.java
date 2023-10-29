@@ -8,17 +8,14 @@ import hello.board.pagging.domain.File;
 import hello.board.pagging.domain.Member;
 import hello.board.pagging.model.FileStore;
 import hello.board.pagging.model.Pagination;
-import hello.board.pagging.model.UploadFile;
 import hello.board.pagging.model.board.*;
 import hello.board.pagging.repository.BoardRepository;
-import hello.board.pagging.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,12 +26,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final FileRepository fileRepository;
+    private final FileService fileService;
     private final FileStore fileStore;
 
     /**
-     * 게시글 저장,
-     * 파일 업로드 언체크 예외 throw
+     * 게시글 저장
      */
     @Transactional
     public void createBoard(BoardSaveDto boardSaveDto, Member member) {
@@ -47,37 +43,8 @@ public class BoardService {
                 .build();
         boardRepository.save(board);
 
-        // 파일 저장
-        try {
-            List<UploadFile> imageUploadFiles = fileStore.storeFiles(boardSaveDto.getImageFiles());
-            if(imageUploadFiles.size() > 0) {
-                // 이미지 파일들 저장
-                List<File> files = new ArrayList<>();
-                for (UploadFile uploadFile : imageUploadFiles) {
-                    files.add(File.builder()
-                                    .boardId(board.getBoardId())
-                                    .uploadFileName(uploadFile.getUploadFileName())
-                                    .storeFileName(uploadFile.getStoreFileName())
-                                    .fileImageYn(true)
-                                    .build());
-                }
-                fileRepository.saveAll(files);
-            }
-
-            UploadFile attachUploadFile = fileStore.storeFile(boardSaveDto.getAttachFile());
-            if(!ObjectUtils.isEmpty(attachUploadFile)) {
-                // 첨부 파일 저장
-                File file = File.builder()
-                        .boardId(board.getBoardId())
-                        .uploadFileName(attachUploadFile.getUploadFileName())
-                        .storeFileName(attachUploadFile.getStoreFileName())
-                        .fileImageYn(false)
-                        .build();
-                fileRepository.save(file);
-            }
-        } catch(IOException e) {
-            throw new CustomFileUploadException("파일 업로드를 할 수 없습니다."); // 언체크예외 (Transaction)
-        }
+        // 파일 저장 (트랜잭션 참여)
+        fileService.createFile(boardSaveDto, board);
     }
 
     /**
@@ -188,10 +155,10 @@ public class BoardService {
 
     /**
      * 게시글 수정,
-     * 존재하지 않은 게시글, 이미 삭제된 게시글, 수정할 수 없는 권한, 파일 업로드할 수 없음 언체크 예외 throw
+     * 존재하지 않은 게시글, 이미 삭제된 게시글, 수정할 수 없는 권한, 파일을 삭제하지 못함 언체크 예외 throw
      */
     @Transactional
-    public List<File> updateBoard(BoardModifyDto boardModifyDto, Member member) {
+    public void updateBoard(BoardModifyDto boardModifyDto, Member member) {
         // 존재하지 않은 게시글일 경우 Exception
         Optional<Board> boardOptional = boardRepository.findById(boardModifyDto.getBoardId());
         Board board = boardOptional.orElseThrow(() -> new BadRequestException("존재하지 않은 게시글입니다."));
@@ -216,69 +183,12 @@ public class BoardService {
                 .build();
         boardRepository.updateByBoard(updateBoard);
 
-        // 파일 UPDATE
-        List<File> dbFileList = fileRepository.findByBoardId(board.getBoardId());
-        List<Long> modifyFileIdList = boardModifyDto.getFileIdList();
-        List<File> deleteedFileList = new ArrayList<>();
 
-        if(!ObjectUtils.isEmpty(modifyFileIdList)) {
-            // modifyFileIdList 에 값이 있을 경우
-            dbFileList.forEach(file -> {
-                // DB 에 조회한 파일리스트 안에 업로드 했었던 파일이 없을 경우
-                log.info("file.getFileId() : {}", file.getFileId());
-                if (!modifyFileIdList.contains(file.getFileId())) {
-                    // DB 에서 삭제
-                    fileRepository.deleteById(file.getFileId());
-                    // 스토리지에서 파일 삭제
-                    // 트랜잭션이 rollback 되면 파일은 삭제되어버리는 문제 발생! 해결 방안 : 리스트를 컨트롤러에 전달
-                    deleteedFileList.add(file);
-                }
-            });
-        } else {
-            // modifyFileIdList 에 값이 없을 경우 DB 에 있던 파일들 삭제
-            dbFileList.forEach(file -> {
-                // DB 에 조회한 파일리스트 안에 업로드 했었던 파일이 없을 경우
-                log.info("file.getFileId() : {}", file.getFileId());
-                // DB 에서 삭제
-                fileRepository.deleteById(file.getFileId());
-                // 스토리지에서 파일 삭제
-                // 트랜잭션이 rollback 되면 파일은 삭제되어버리는 문제 발생! 해결 방안 : 리스트를 컨트롤러에 전달
-                deleteedFileList.add(file);
-            });
+        // 트랜잭션 참여
+        List<File> deletedFileList = fileService.updateFile(boardModifyDto, updateBoard);
+
+        if(!fileStore.removeFiles(deletedFileList)) {
+            throw new CustomFileUploadException("파일을 삭제하지 못했습니다.");
         }
-
-        // 새로 Upload 한 파일의 데이터를 FILE 테이블에 INSERT
-        try {
-            List<UploadFile> imageUploadFiles = fileStore.storeFiles(boardModifyDto.getImageFiles());
-            if (imageUploadFiles.size() > 0) {
-                // 이미지 파일들 저장
-                List<File> files = new ArrayList<>();
-                for (UploadFile uploadFile : imageUploadFiles) {
-                    files.add(File.builder()
-                            .boardId(board.getBoardId())
-                            .uploadFileName(uploadFile.getUploadFileName())
-                            .storeFileName(uploadFile.getStoreFileName())
-                            .fileImageYn(true)
-                            .build());
-                }
-                fileRepository.saveAll(files);
-            }
-
-            UploadFile attachUploadFile = fileStore.storeFile(boardModifyDto.getAttachFile());
-            if (!ObjectUtils.isEmpty(attachUploadFile)) {
-                // 첨부 파일 저장
-                File file = File.builder()
-                        .boardId(board.getBoardId())
-                        .uploadFileName(attachUploadFile.getUploadFileName())
-                        .storeFileName(attachUploadFile.getStoreFileName())
-                        .fileImageYn(false)
-                        .build();
-                fileRepository.save(file);
-            }
-        } catch (IOException e) {
-            throw new CustomFileUploadException("파일 업로드를 할 수 없습니다."); // 언체크예외 (Transaction)
-        }
-
-        return deleteedFileList;
     }
 }
