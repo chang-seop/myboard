@@ -42,7 +42,7 @@
         where
             b.board_delete_date is null
         order by
-            b.board_id desc limit #{pagination.limitStart}, #{recordSize}
+            b.board_regdate desc limit #{pagination.limitStart}, #{recordSize}
     </select>
 
     <select id="getPageMaxCount" resultType="Integer">
