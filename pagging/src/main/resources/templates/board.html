@@ -53,8 +53,8 @@
                 // 3. 이전 페이지가 있는 경우, 즉 시작 페이지(startPage)가 1이 아닌 경우 첫 페이지 버튼과 이전 페이지 버튼을 HTML 에 추가
                 if (pagination.existPrevPage) {
                     html += `
-                        <li class="page-item"><a href="javascript:void(0);" onclick="movePage(1)" class="page-link">첫 페이지</a></li>
-                         <li class="page-item"><a href="javascript:void(0);" onclick="movePage(${pagination.startPage - 1})" class="page-link">이전 페이지</a></li>
+                        <li class="page-item"><a href="javascript:void(0);" onclick="movePage(1)" class="page-link">&laquo;</a></li>
+                         <li class="page-item"><a href="javascript:void(0);" onclick="movePage(${pagination.startPage - 1})" class="page-link" aria-label="Previous">&lt;</a></li>
                     `;
                 }
 
@@ -71,8 +71,8 @@
                 // 5. 현재 위치한 페이지 뒤에 데이터가 더 있는 경우, 다음 페이지 버튼과 끝 페이지 버튼을 HTML 에 추가
                 if (pagination.existNextPage) {
                     html += `
-                         <li class="page-item"><a href="javascript:void(0);" onclick="movePage(${pagination.endPage + 1});" class="page-link" >다음 페이지</a></li>
-                         <li class="page-item"><a href="javascript:void(0);" onclick="movePage(${pagination.totalPageCount});" class="page-link">마지막 페이지</a></li>
+                         <li class="page-item"><a href="javascript:void(0);" onclick="movePage(${pagination.endPage + 1});" class="page-link" aria-label="Next">&gt;</a></li>
+                         <li class="page-item"><a href="javascript:void(0);" onclick="movePage(${pagination.totalPageCount});" class="page-link">&raquo;</a></li>
                     `;
                 }
 
@@ -92,10 +92,9 @@
                 }
 
                 /*
-                 * 2. location.pathname : 리스트 페이지의 URI("/post/list.do")를 의미
-                 *    new URLSearchParams(queryParams).toString() : queryParams의 모든 프로퍼티(key-value)를 쿼리 스트링으로 변환
+                 * 2. location.pathname : 리스트 페이지의 URI 를 의미
+                 *    new URLSearchParams(queryParams).toString() : queryParams 의 모든 프로퍼티(key-value)를 쿼리 스트링으로 변환
                  *    URI + 쿼리 스트링에 해당하는 주소로 이동
-                 *    (해당 함수가 리턴해주는 값을 브라우저 콘솔(console)에 찍어보시면 쉽게 이해하실 수 있습니다.)
                  */
                 location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
             }
