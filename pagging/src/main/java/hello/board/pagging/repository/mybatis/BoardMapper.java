@@ -16,7 +16,7 @@ public interface BoardMapper {
     List<Board> findByMemberId(Long memberId);
     List<Board> findAll(SearchDto searchDto);
     Integer getPageMaxCount();
-    Optional<BoardFile> findByIdWithFile(Long id);
+    Optional<BoardFile> findBoardFileById(Long id);
     void deleteSetupByBoardIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") Long memberId);
     void updateByBoard(Board board);
 }

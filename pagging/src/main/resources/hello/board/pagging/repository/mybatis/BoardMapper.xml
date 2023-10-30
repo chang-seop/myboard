@@ -54,7 +54,7 @@
             b.board_delete_date is null
     </select>
 
-    <resultMap id="boardFileMap" type="BoardFile">
+    <resultMap id="BoardFileMap" type="BoardFile">
         <id column="board_id" property="boardId"/>
         <result column="member_id" property="memberId"/>
         <result column="board_writer" property="boardWriter"/>
@@ -73,17 +73,14 @@
         </collection>
     </resultMap>
 
-    <!-- Board join File 조회 -->
-    <select id="findByIdWithFile" parameterType="Long" resultMap="boardFileMap">
+    <!-- Board, File, Reply Join 조회 -->
+    <select id="findBoardFileById" parameterType="Long" resultMap="BoardFileMap">
         select
             b.board_id, b.member_id, b.board_writer, b.board_title, b.board_content, b.board_regdate, b.board_update_date, b.board_delete_date,
-            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_image_yn, f.file_regdate
+            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_image_yn, f.file_regdate,
         from
-            board as b
-                inner join
-                    file as f
-                on
-                    b.board_id = f.board_id
+        board as b
+            left outer join file as f on b.board_id = f.board_id
         where
             b.board_id = #{id}
     </select>
