@@ -2,7 +2,8 @@ package hello.board.pagging.repository.mybatis;
 
 import hello.board.pagging.domain.Board;
 import hello.board.pagging.domain.BoardFile;
-import hello.board.pagging.model.board.SearchDto;
+import hello.board.pagging.model.Search;
+import hello.board.pagging.model.board.BoardSearchDto;
 import hello.board.pagging.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -32,8 +33,8 @@ public class MyBatisBoardRepository implements BoardRepository {
     }
 
     @Override
-    public List<Board> findAll(SearchDto searchDto) {
-        return boardMapper.findAll(searchDto);
+    public List<Board> findAll(BoardSearchDto search) {
+        return boardMapper.findAll(search);
     }
 
     @Override

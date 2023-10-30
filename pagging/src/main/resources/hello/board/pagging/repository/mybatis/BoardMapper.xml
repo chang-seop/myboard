@@ -34,7 +34,7 @@
 
     <!-- 페이지네이션 -->
     <!-- board_delete_date 가 존재 시 삭제 된 게시글이므로 포함하지 않는다. -->
-    <select id="findAll" parameterType="hello.board.pagging.model.board.SearchDto" resultType="Board">
+    <select id="findAll" parameterType="hello.board.pagging.model.board.BoardSearchDto" resultType="Board">
         select
             <include refid="boardColumns"/>
         from

@@ -2,7 +2,7 @@ package hello.board.pagging.repository;
 
 import hello.board.pagging.domain.*;
 import hello.board.pagging.model.Pagination;
-import hello.board.pagging.model.board.SearchDto;
+import hello.board.pagging.model.board.BoardSearchDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,12 +126,12 @@ public class BoardRepositoryTest {
             boardRepository.save(board);
         }
 
-        SearchDto searchDto = new SearchDto();
-        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), searchDto);
-        searchDto.setPagination(pagination);
+        BoardSearchDto search = new BoardSearchDto();
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), search);
+        search.setPagination(pagination);
 
         // when
-        List<Board> findBoardList = boardRepository.findAll(searchDto);
+        List<Board> findBoardList = boardRepository.findAll(search);
 
         // then
         Assertions.assertThat(findBoardList.size()).isEqualTo(10);

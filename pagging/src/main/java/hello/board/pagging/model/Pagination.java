@@ -1,6 +1,5 @@
 package hello.board.pagging.model;
 
-import hello.board.pagging.model.board.SearchDto;
 import lombok.Getter;
 
 @Getter
@@ -13,14 +12,14 @@ public class Pagination {
     private boolean existPrevPage; // 이전 페이지 존재 여부
     private boolean existNextPage; // 다음 페이지 존재 여부
 
-    public Pagination(int totalRecordCount, SearchDto params) {
+    public Pagination(int totalRecordCount, Search params) {
         if(totalRecordCount > 0) {
             this.totalRecordCount = totalRecordCount;
             calculation(params);
         }
     }
 
-    private void calculation(SearchDto params) {
+    private void calculation(Search params) {
         // 전체 페이지 수 계산
         totalPageCount = ((totalRecordCount - 1) / params.getRecordSize()) + 1;
 

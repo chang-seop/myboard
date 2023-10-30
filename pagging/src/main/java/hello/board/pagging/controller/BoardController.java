@@ -5,7 +5,6 @@ import hello.board.pagging.domain.File;
 import hello.board.pagging.model.FileStore;
 import hello.board.pagging.model.board.*;
 import hello.board.pagging.model.member.MemberDetailsDto;
-import hello.board.pagging.repository.FileRepository;
 import hello.board.pagging.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ public class BoardController {
      * 게시글 보기 뷰
      */
     @GetMapping()
-    public String boardForm(@ModelAttribute("params") final SearchDto params,
+    public String boardForm(@ModelAttribute("params") final BoardSearchDto params,
                             Model model) {
         PagingResponseDto<BoardDto> response = boardService.findAllBoard(params);
         model.addAttribute("response", response);
