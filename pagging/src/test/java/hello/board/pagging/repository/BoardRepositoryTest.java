@@ -1,9 +1,6 @@
 package hello.board.pagging.repository;
 
-import hello.board.pagging.domain.Board;
-import hello.board.pagging.domain.BoardFile;
-import hello.board.pagging.domain.File;
-import hello.board.pagging.domain.Member;
+import hello.board.pagging.domain.*;
 import hello.board.pagging.model.Pagination;
 import hello.board.pagging.model.board.SearchDto;
 import org.assertj.core.api.Assertions;
@@ -12,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +23,8 @@ public class BoardRepositoryTest {
     private MemberRepository memberRepository;
     @Autowired
     private FileRepository fileRepository;
+    @Autowired
+    private ReplyRepository replyRepository;
 
     @Test
     public void create() {
@@ -234,7 +232,7 @@ public class BoardRepositoryTest {
     }
 
     @Test
-    public void findByIdWithFile() {
+    public void findBoardFileReplyById() {
         // given
         Member member = Member.builder()
                 .memberEmail("hello1@naver.com")
@@ -245,7 +243,7 @@ public class BoardRepositoryTest {
         memberRepository.save(member);
 
         Board board = Board.builder()
-                .boardWriter("한국")
+                .boardWriter(member.getMemberNm())
                 .memberId(member.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
@@ -265,10 +263,11 @@ public class BoardRepositoryTest {
         fileRepository.saveAll(files);
 
         // when
-        Optional<BoardFile> findBoardFile = boardRepository.findByIdWithFile(board.getBoardId());
+        Optional<BoardFile> findBoardFile = boardRepository.findBoardFileById(board.getBoardId());
 
         // then
         BoardFile boardFile = findBoardFile.orElse(null);
-        Assertions.assertThat(boardFile).isNotNull();
+        assert boardFile != null;
+        Assertions.assertThat(boardFile.getFileList().size()).isEqualTo(5);
     }
 }

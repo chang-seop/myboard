@@ -42,8 +42,8 @@ public class MyBatisBoardRepository implements BoardRepository {
     }
 
     @Override
-    public Optional<BoardFile> findByIdWithFile(Long id) {
-        return boardMapper.findByIdWithFile(id);
+    public Optional<BoardFile> findBoardFileById(Long id) {
+        return boardMapper.findBoardFileById(id);
     }
 
     @Override

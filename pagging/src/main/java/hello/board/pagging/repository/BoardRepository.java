@@ -14,7 +14,7 @@ public interface BoardRepository {
     List<Board> findByMemberId(Long memberId);
     List<Board> findAll(SearchDto params);
     Integer getPageMaxCount();
-    Optional<BoardFile> findByIdWithFile(Long id);
+    Optional<BoardFile> findBoardFileById(Long id);
     void deleteSetupByBoardIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") Long memberId);
     void updateByBoard(Board board);
 }

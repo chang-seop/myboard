@@ -35,7 +35,7 @@
             </div>
 
             <!-- 이미지 출력 -->
-            <img class="my-1" th:each="file : ${boardDto.fileList}" th:if="${file.fileImageYn}" th:src="|/file/images/${file.getStoreFileName()}|" width="300" height="300"/>
+            <img class="my-1" th:each="file : ${boardDto.fileList}" th:if="${file.fileImageYn == true}" th:src="|/file/images/${file.getStoreFileName()}|" width="300" height="300"/>
 
             <!-- 작성자 및 작성일 -->
             <div class="my-1 d-inline">
@@ -45,7 +45,7 @@
 
             <!-- 첨부 파일 -->
             <div class="my-1" th:each="file : ${boardDto.fileList}">
-                <div class="card py-2 my-3" th:if="${!file.fileImageYn}">
+                <div class="card py-2 my-3" th:if="${file.fileImageYn == false}">
                     <a th:href="|/file/attach/${file.fileId}|" th:text="${file.getUploadFileName()}"></a>
                 </div>
             </div>

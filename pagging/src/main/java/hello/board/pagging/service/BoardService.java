@@ -48,29 +48,25 @@ public class BoardService {
     }
 
     /**
-     * Board 및 BoardFile 조회,
+     * BoardFile 조회,
      * 존재하지 않은 게시글, 삭제된 게시글 언체크 예외 throw
      * @return BoardDto
      */
     @Transactional(readOnly = true)
     public BoardDto findBoardAndFiles(Long boardId) {
-        // Board 로 조회
-        Optional<Board> boardOptional = boardRepository.findById(boardId);
+        // boardId 로 된 File 이 있는지 조회
+        Optional<BoardFile> BoardFileOptional = boardRepository.findBoardFileById(boardId);
 
         // 조회된 데이터가 존재 하지 않을 경우 예외 발생
-        Board board = boardOptional.orElseThrow(() -> new BadRequestException("존재하지 않은 게시글입니다."));
+        BoardFile boardFile = BoardFileOptional.orElseThrow(() -> new BadRequestException("존재하지 않은 게시글입니다."));
 
         // 게시글이 삭제되어 있는 경우 예외 발생 (boardDeleteDate 가 null 이 아닐 경우)
-        if(!ObjectUtils.isEmpty(board.getBoardDeleteDate())) {
+        if(!ObjectUtils.isEmpty(boardFile.getBoardDeleteDate())) {
             throw new BadRequestException("삭제된 게시글입니다.");
         }
 
-        // boardId 로 된 File 이 있는지 조회
-        Optional<BoardFile> BoardFileOptional = boardRepository.findByIdWithFile(boardId);
-        BoardFile boardFile = BoardFileOptional.orElse(null);
-
         // boardFile 이 null 이 아닐 경우
-        if(boardFile != null) {
+        if(!ObjectUtils.isEmpty(boardFile.getFileList())) {
             return BoardDto.builder()
                     .boardId(boardFile.getBoardId())
                     .memberId(boardFile.getMemberId())
@@ -84,12 +80,12 @@ public class BoardService {
 
         // * File 이 존재하지 않은 경우 *
         return BoardDto.builder()
-                .boardId(board.getBoardId())
-                .memberId(board.getMemberId())
-                .boardWriter(board.getBoardWriter())
-                .boardTitle(board.getBoardTitle())
-                .boardContent(board.getBoardContent())
-                .boardRegdate(board.getBoardRegdate())
+                .boardId(boardFile.getBoardId())
+                .memberId(boardFile.getMemberId())
+                .boardWriter(boardFile.getBoardWriter())
+                .boardTitle(boardFile.getBoardTitle())
+                .boardContent(boardFile.getBoardContent())
+                .boardRegdate(boardFile.getBoardRegdate())
                 .build();
     }
 
