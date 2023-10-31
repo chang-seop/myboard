@@ -10,5 +10,5 @@ create table board (
     board_update_date   timestamp,
     board_delete_date   timestamp,
     primary key (board_id),
-    foreign key (member_id) references member (member_id)
+    foreign key (member_id) references member (member_id) on delete cascade
 );
