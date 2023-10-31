@@ -12,14 +12,16 @@ import java.time.LocalDateTime;
 public class Reply {
     private Long replyId;
     private Long boardId;
+    private Long memberId;
     private String replyWriter;
     private String replyContent;
     private LocalDateTime replyRegdate;
 
     @Builder
-    public Reply(Long replyId, Long boardId, String replyWriter, String replyContent, LocalDateTime replyRegdate) {
+    public Reply(Long replyId, Long boardId, Long memberId, String replyWriter, String replyContent, LocalDateTime replyRegdate) {
         this.replyId = replyId;
         this.boardId = boardId;
+        this.memberId = memberId;
         this.replyWriter = replyWriter;
         this.replyContent = replyContent;
         this.replyRegdate = replyRegdate;
