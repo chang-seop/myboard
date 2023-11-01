@@ -1,4 +1,4 @@
-package hello.board.pagging.model.board;
+package hello.board.pagging.model;
 
 import hello.board.pagging.model.Pagination;
 import lombok.Getter;
