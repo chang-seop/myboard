@@ -8,53 +8,70 @@
 <section>
     <div class="container" th:object="${boardDto}">
 
-        <div th:if="${AuthMemberId} == *{memberId}">
+        <!-- 자기가 게시한 게시글일 경우 수정 삭제가 가능해야 된다. -->
+        <div class="d-block" th:if="${authMemberId} == *{memberId}">
             <!--/* 수정폼 이동 버튼 */-->
-            <div class="p-2 px-1 my-5 d-inline">
+            <div class="p-2 px-1 d-inline">
                 <a class="btn btn-primary" th:href="@{/board/modifyView/{param1}(param1=*{boardId})}" th:text="수정">수정 버튼</a>
             </div>
 
             <!--/* 삭제하기 버튼 */-->
             <form class="d-inline" method="post" th:action="@{/board/remove}">
-                <div class="py-2 px-1 my-5  d-inline">
+                <div class="py-2 px-1 d-inline">
                     <input type="hidden" th:id="boardId" th:name="boardId" th:value="${boardDto.boardId}">
                     <button type="submit" class="btn btn-danger" th:text="삭제">삭제 버튼</button>
                 </div>
             </form>
         </div>
 
+        <!-- th:text="*{boardTitle}"> -->
         <!-- 제목 -->
-        <div class="card py-5 my-3 text-center">
-            <h2 th:text="*{boardTitle}">게시글 제목</h2>
-        </div>
-
-        <div class="card py-2 my-3">
-            <!-- 본문 -->
-            <div class="my-1">
-                <p th:text="*{boardContent}"/>
+        <div class="card mb-2 my-2">
+            <div class="card-header bg-light">
+                <p class="float-start mb-0 display-6">[[*{boardTitle}]]</p>
+                <p class="float-end mb-0 mt-3">[[${#temporals.format(boardDto.boardRegdate, 'yyyy년 MM월 dd일 HH시 mm분')}]]</p>
             </div>
+            <div class="card-body">
+                <!-- 본문 -->
+                <div class="my-1">
+                    <p th:text="*{boardContent}"/>
+                </div>
 
-            <!-- 이미지 출력 -->
-            <img class="my-1" th:each="file : ${boardDto.fileList}" th:if="${file.fileImageYn == true}" th:src="|/file/images/${file.getStoreFileName()}|" width="300" height="300"/>
+                <!-- 이미지 출력 -->
+                <img class="my-1" th:each="file : ${boardDto.fileList}" th:if="${file.fileImageYn == true}" th:src="|/file/images/${file.getStoreFileName()}|" width="300" height="300"/>
 
-            <!-- 작성자 및 작성일 -->
-            <div class="my-1 d-inline">
-                <span th:text="|작성자: *{boardWriter}, |"/>
-                <span th:text="${#temporals.format(boardDto.boardRegdate, '작성일: yyyy년 MM월 dd일 HH시 mm분')}"/>
-            </div>
-
-            <!-- 첨부 파일 -->
-            <div class="my-1" th:each="file : ${boardDto.fileList}">
-                <div class="card py-2 my-3" th:if="${file.fileImageYn == false}">
-                    <a th:href="|/file/attach/${file.fileId}|" th:text="${file.getUploadFileName()}"></a>
+                <!-- 첨부 파일 -->
+                <div class="my-1 d-inline" th:each="file : ${boardDto.fileList}">
+                    <div class="card py-2 my-3" th:if="${file.fileImageYn == false}">
+                        <a th:href="|/file/attach/${file.fileId}|" th:text="${file.getUploadFileName()}"></a>
+                    </div>
                 </div>
             </div>
-
         </div>
 
         <!-- 댓글란 -->
-        <div class="card py-5 my-3">
-
+        <div class="card mb-2" th:each="reply : ${replyDtoList}">
+            <div class="card-header bg-light">
+                <p class="float-start mb-0">[[${reply.replyWriter}]]</p>
+                <p class="float-end mb-0">[[${#temporals.format(reply.replyRegdate, 'yyyy년 MM월 dd일 HH시 mm분')}]]</p>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div th:if="${authMemberId} != ${reply.memberId}">
+                            <textarea class="form-control" rows="2" th:text="${reply.replyContent}" disabled readonly></textarea>
+                        </div>
+                        <div th:if="${authMemberId} == ${reply.memberId}">
+                            <form method="post" th:action="@{/reply/delete}">
+                                <input type="hidden" th:id="replyId" th:name="replyId" th:value="${reply.replyId}"/>
+                                <input type="hidden" th:id="boardId" th:name="boardId" th:value="${reply.boardId}"/>
+                                <textarea class="form-control" rows="2" th:text="${reply.replyContent}" disabled readonly></textarea>
+                                <button type="submit" class="btn btn-dark mt-3">삭제</button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <!-- 댓글 페이징 -->
@@ -63,10 +80,26 @@
         </div>
 
         <!-- 댓글 입력란 -->
-        <div class="card py-5 my-3">
+        <div class="card mb-2">
+            <div class="card-header bg-light">
+                <i class="fa fa-comment fa"></i> REPLY
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="form-inline mb-2">
+                            <input type="text" class="form-control-sm ml-2" th:value="${authMemberNm}" disabled readonly>
+                        </div>
+                        <form method="post" th:action="@{/reply/{param1}(param1=${boardDto.boardId})}" th:object="${replySaveDto}">
+                            <textarea class="form-control" rows="3" th:field="*{replyContent}"></textarea>
+                            <div class="field-error" th:errors="*{replyContent}"></div>
 
+                            <button type="submit" class="btn btn-dark mt-3">댓글 쓰기</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
-
     </div>
 </section>
 

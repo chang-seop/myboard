@@ -5,7 +5,11 @@ import hello.board.pagging.domain.File;
 import hello.board.pagging.model.FileStore;
 import hello.board.pagging.model.board.*;
 import hello.board.pagging.model.member.MemberDetailsDto;
+import hello.board.pagging.model.reply.ReplyDto;
+import hello.board.pagging.model.reply.ReplyDeleteDto;
+import hello.board.pagging.model.reply.ReplySaveDto;
 import hello.board.pagging.service.BoardService;
+import hello.board.pagging.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final ReplyService replyService;
     private final FileStore fileStore;
     @Value("${file.maxSize}")
     private Integer fileMaxSize;
@@ -41,7 +46,7 @@ public class BoardController {
     }
 
     /**
-     * 게시글 상세 보기 뷰
+     * 게시글 상세 보기 뷰 (게시글, 파일, 댓글 불러오기)
      */
     @GetMapping("/{boardId}")
     public String boardDetailForm(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
@@ -49,14 +54,16 @@ public class BoardController {
                                   Model model) {
 
         BoardDto boardDto = boardService.findBoardAndFiles(boardId);
+        List<ReplyDto> replyDtoList = replyService.findReply(boardId);
 
-        if(boardDto != null) {
-            model.addAttribute("AuthMemberId", memberDetailsDto.getMember().getMemberId()); // 삭제 하기 위한 model 속성
-            model.addAttribute("boardDto", boardDto);
-            return "boardDetail";
-        }
+        model.addAttribute("replySaveDto", new ReplySaveDto());
+        model.addAttribute("replyModifyDto", new ReplyDeleteDto());
+        model.addAttribute("authMemberId", memberDetailsDto.getMember().getMemberId()); // 파일 삭제 하기 위한 model 속성
+        model.addAttribute("authMemberNm", memberDetailsDto.getMember().getMemberNm());
+        model.addAttribute("boardDto", boardDto);
+        model.addAttribute("replyDtoList", replyDtoList);
 
-        return "redirect:/board";
+        return "boardDetail";
     }
 
     /**
