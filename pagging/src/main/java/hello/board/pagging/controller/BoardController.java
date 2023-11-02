@@ -3,11 +3,13 @@ package hello.board.pagging.controller;
 import hello.board.pagging.common.exception.BadRequestException;
 import hello.board.pagging.domain.File;
 import hello.board.pagging.model.FileStore;
+import hello.board.pagging.model.PagingResponseDto;
 import hello.board.pagging.model.board.*;
 import hello.board.pagging.model.member.MemberDetailsDto;
 import hello.board.pagging.model.reply.ReplyDto;
 import hello.board.pagging.model.reply.ReplyDeleteDto;
 import hello.board.pagging.model.reply.ReplySaveDto;
+import hello.board.pagging.model.reply.ReplySearchDto;
 import hello.board.pagging.service.BoardService;
 import hello.board.pagging.service.ReplyService;
 import lombok.RequiredArgsConstructor;
@@ -51,17 +53,22 @@ public class BoardController {
     @GetMapping("/{boardId}")
     public String boardDetailForm(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
                                   @PathVariable("boardId") Long boardId,
+                                  @ModelAttribute("params") final ReplySearchDto params,
+                                  @RequestParam(value = "replySaveFailure", defaultValue = "false", required = false) Boolean replySaveFailure,
                                   Model model) {
+        if(replySaveFailure) {
+            model.addAttribute("replySaveFailure", "댓글이 너무 길거나 짧습니다. (1자 이상 500자 이내)");
+        }
 
         BoardDto boardDto = boardService.findBoardAndFiles(boardId);
-        List<ReplyDto> replyDtoList = replyService.findReply(boardId);
+        PagingResponseDto<ReplyDto> pagingResponseDto = replyService.findPageReply(params, boardId);
 
         model.addAttribute("replySaveDto", new ReplySaveDto());
         model.addAttribute("replyModifyDto", new ReplyDeleteDto());
         model.addAttribute("authMemberId", memberDetailsDto.getMember().getMemberId()); // 파일 삭제 하기 위한 model 속성
         model.addAttribute("authMemberNm", memberDetailsDto.getMember().getMemberNm());
         model.addAttribute("boardDto", boardDto);
-        model.addAttribute("replyDtoList", replyDtoList);
+        model.addAttribute("pagingResponseDto", pagingResponseDto);
 
         return "boardDetail";
     }

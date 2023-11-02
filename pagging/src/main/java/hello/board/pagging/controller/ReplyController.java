@@ -1,10 +1,12 @@
 package hello.board.pagging.controller;
 
+import hello.board.pagging.model.PagingResponseDto;
 import hello.board.pagging.model.board.BoardDto;
 import hello.board.pagging.model.member.MemberDetailsDto;
 import hello.board.pagging.model.reply.ReplyDto;
 import hello.board.pagging.model.reply.ReplyDeleteDto;
 import hello.board.pagging.model.reply.ReplySaveDto;
+import hello.board.pagging.model.reply.ReplySearchDto;
 import hello.board.pagging.service.BoardService;
 import hello.board.pagging.service.ReplyService;
 import lombok.RequiredArgsConstructor;
@@ -36,26 +38,16 @@ public class ReplyController {
     @PostMapping("/{boardId}")
     public String addReply(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
                            @PathVariable("boardId") Long boardId,
-                           @Valid @ModelAttribute ReplySaveDto replySaveDto,
-                           BindingResult bindingResult,
-                           Model model,
+                           @ModelAttribute ReplySaveDto replySaveDto,
                            RedirectAttributes redirectAttributes) {
+        redirectAttributes.addAttribute("boardId", boardId);
+        boolean isNotValid = (replySaveDto.getReplyContent().length() < 1 || replySaveDto.getReplyContent().length() > 500);
 
-        // 필드 에러 발생 시
-        if(bindingResult.hasErrors()) {
-            List<ReplyDto> replyDtoList = replyService.findReply(boardId);
-            BoardDto boardDto = boardService.findBoardAndFiles(boardId);
-            model.addAttribute("authMemberId", memberDetailsDto.getMember().getMemberId()); // 파일 삭제 하기 위한 model 속성
-            model.addAttribute("authMemberNm", memberDetailsDto.getMember().getMemberNm());
-            model.addAttribute("boardDto", boardDto);
-            model.addAttribute("replyDtoList", replyDtoList);
-            model.addAttribute("replyModifyDto", new ReplyDeleteDto());
-            return "boardDetail"; // 렌더링 진행
+        if(isNotValid) {
+            return "redirect:/board/{boardId}?replySaveFailure=true";
         }
 
         replyService.saveReply(replySaveDto, boardId, memberDetailsDto.getMember());
-
-        redirectAttributes.addAttribute("boardId", boardId);
         return "redirect:/board/{boardId}";
     }
 
