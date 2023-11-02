@@ -8,6 +8,7 @@ import hello.board.pagging.domain.File;
 import hello.board.pagging.domain.Member;
 import hello.board.pagging.model.FileStore;
 import hello.board.pagging.model.Pagination;
+import hello.board.pagging.model.PagingResponseDto;
 import hello.board.pagging.model.board.*;
 import hello.board.pagging.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
