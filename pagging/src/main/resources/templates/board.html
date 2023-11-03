@@ -83,9 +83,17 @@
 
             // 페이지 이동
             function movePage(page) {
+                var urlObj = new URL(window.location.href);
+                var urlSearchObj = new URLSearchParams(urlObj.search);
+
+                // searchType, keyword 로 된 검색 조건이 있는지 확인
+                const searchType = urlSearchObj.get('searchType');
+                const keyword = urlSearchObj.get('keyword');
 
                 // 1. drawPage( )의 각 버튼에 선언된 onclick 이벤트를 통해 전달받는 page(페이지 번호)를 기준으로 객체 생성
                 const queryParams = {
+                    searchType: searchType,
+                    keyword: keyword,
                     page: (page) ? page : 1,
                     recordSize: 10,
                     pageSize: 10
@@ -101,6 +109,17 @@
         /*]]>*/
         </script>
     </th:block>
+
+    <div class="container w-75 p-1 my-2">
+        <form method="get" th:action="@{/board}">
+            <select class="form-select d-inline" style="width:150px; height:40px;" th:name="searchType" th:id="searchType">
+                <option th:text="조건X"></option>
+                <option th:each="searchType : ${searchTypeList}" th:value="${searchType}" th:text="${searchType}"></option>
+            </select>
+            <input style="width:150px; height:40px;" class="d-inline" type="text" th:name="keyword" th:id="keyword">
+            <button style="width:60px; height:40px;" class="btn btn-outline-success d-inline mb-1" type="submit">검색</button>
+        </form>
+    </div>
 
     <!--/* 리스트 데이터 렌더링 영역 */-->
     <div id="list">

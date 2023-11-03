@@ -35,6 +35,8 @@ public class BoardController {
     private final FileStore fileStore;
     @Value("${file.maxSize}")
     private Integer fileMaxSize;
+    @Value("${board.list.searchType}")
+    private List<String> searchTypeList;
 
     /**
      * 게시글 보기 뷰
@@ -44,6 +46,7 @@ public class BoardController {
                             Model model) {
         PagingResponseDto<BoardDto> response = boardService.findAllBoard(params);
         model.addAttribute("response", response);
+        model.addAttribute("searchTypeList", searchTypeList);
         return "board";
     }
 

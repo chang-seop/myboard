@@ -96,10 +96,10 @@ public class BoardService {
      */
     @Transactional(readOnly = true)
     public PagingResponseDto<BoardDto> findAllBoard(final BoardSearchDto params) {
-        // 조건에 해당하는 데이터가 없는 경우, 응답 데이터에 비어있는 리스트와 null 을 담아 반환
-        Integer count = boardRepository.getPageMaxCount();
+        Integer count = boardRepository.getPageMaxCount(params);
 
         if (count < 1) {
+            // 조건에 해당하는 데이터가 없는 경우, 응답 데이터에 비어있는 리스트와 null 을 담아 반환
             return new PagingResponseDto<>(Collections.emptyList(), null);
         }
 
