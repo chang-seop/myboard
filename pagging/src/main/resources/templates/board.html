@@ -113,8 +113,8 @@
     <div class="container w-75 p-1 my-2">
         <form method="get" th:action="@{/board}">
             <select class="form-select d-inline" style="width:150px; height:40px;" th:name="searchType" th:id="searchType">
-                <option th:text="조건X"></option>
-                <option th:each="searchType : ${searchTypeList}" th:value="${searchType}" th:text="${searchType}"></option>
+                <option></option>
+                <option th:each="searchType : ${searchTypeList}" th:value="${searchType.value}" th:text="${searchType.name}"></option>
             </select>
             <input style="width:150px; height:40px;" class="d-inline" type="text" th:name="keyword" th:id="keyword">
             <button style="width:60px; height:40px;" class="btn btn-outline-success d-inline mb-1" type="submit">검색</button>
