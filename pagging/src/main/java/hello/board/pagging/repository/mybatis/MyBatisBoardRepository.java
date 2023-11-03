@@ -38,8 +38,8 @@ public class MyBatisBoardRepository implements BoardRepository {
     }
 
     @Override
-    public Integer getPageMaxCount() {
-        return boardMapper.getPageMaxCount();
+    public Integer getPageMaxCount(BoardSearchDto search) {
+        return boardMapper.getPageMaxCount(search);
     }
 
     @Override

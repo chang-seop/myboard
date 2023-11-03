@@ -4,6 +4,7 @@ import hello.board.pagging.domain.*;
 import hello.board.pagging.model.Pagination;
 import hello.board.pagging.model.board.BoardSearchDto;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -127,6 +128,76 @@ public class BoardRepositoryTest {
         }
 
         BoardSearchDto search = new BoardSearchDto();
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), search);
+        search.setPagination(pagination);
+
+        // when
+        List<Board> findBoardList = boardRepository.findAll(search);
+
+        // then
+        Assertions.assertThat(findBoardList.size()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("SearchType = title 로 검색하여 조회하기 테스트")
+    public void findAll_SearchType_title() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+        memberRepository.save(member);
+
+        for(int i = 0; i < 20; i++) {
+            Board board = Board.builder()
+                    .boardWriter("한국")
+                    .memberId(member.getMemberId())
+                    .boardTitle("제목" + i)
+                    .boardContent("글" + i)
+                    .build();
+            boardRepository.save(board);
+        }
+
+        BoardSearchDto search = new BoardSearchDto();
+        search.setSearchType("title");
+        search.setKeyword("제목");
+
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), search);
+        search.setPagination(pagination);
+
+        // when
+        List<Board> findBoardList = boardRepository.findAll(search);
+
+        // then
+        Assertions.assertThat(findBoardList.size()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("SearchType = writer 로 검색하여 조회하기 테스트")
+    public void findAll_SearchType_writer() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+        memberRepository.save(member);
+
+        for(int i = 0; i < 20; i++) {
+            Board board = Board.builder()
+                    .boardWriter("한국")
+                    .memberId(member.getMemberId())
+                    .boardTitle("제목" + i)
+                    .boardContent("글" + i)
+                    .build();
+            boardRepository.save(board);
+        }
+
+        BoardSearchDto search = new BoardSearchDto();
+        search.setSearchType("writer");
+        search.setKeyword("한국");
+
         Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), search);
         search.setPagination(pagination);
 

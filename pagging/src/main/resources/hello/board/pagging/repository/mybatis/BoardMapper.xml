@@ -34,23 +34,40 @@
 
     <!-- 페이지네이션 -->
     <!-- board_delete_date 가 존재 시 삭제 된 게시글이므로 포함하지 않는다. -->
+    <!-- 키워드로 검색하기, 최근 순 정렬 -->
     <select id="findAll" parameterType="hello.board.pagging.model.board.BoardSearchDto" resultType="Board">
         select
             <include refid="boardColumns"/>
         from
             board as b
         where
+            <choose>
+                <when test="'title'.equals(searchType)">
+                    b.board_title like CONCAT('%', #{keyword}, '%') and
+                </when>
+                <when test="'writer'.equals(searchType)">
+                    b.board_writer like CONCAT('%', #{keyword}, '%') and
+                </when>
+            </choose>
             b.board_delete_date is null
         order by
             b.board_regdate desc limit #{pagination.limitStart}, #{recordSize}
     </select>
 
-    <select id="getPageMaxCount" resultType="Integer">
+    <select id="getPageMaxCount" parameterType="hello.board.pagging.model.board.BoardSearchDto" resultType="Integer">
         select
             count(*)
         from
             board as b
         where
+            <choose>
+                <when test="'title'.equals(searchType)">
+                    b.board_title like CONCAT('%', #{keyword}, '%') and
+                </when>
+                <when test="'writer'.equals(searchType)">
+                    b.board_writer like CONCAT('%', #{keyword}, '%') and
+                </when>
+            </choose>
             b.board_delete_date is null
     </select>
 
