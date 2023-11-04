@@ -6,7 +6,8 @@
 
     <!-- 멤버 등록 -->
     <insert id="save" useGeneratedKeys="true" keyProperty="memberId">
-        insert into member (member_nm, member_email, member_pwd, member_regdate)
+        insert into
+            member (member_nm, member_email, member_pwd, member_regdate)
         values (#{memberNm}, #{memberEmail}, #{memberPwd}, now())
     </insert>
 
@@ -31,15 +32,31 @@
 
     <!-- * Main * email 로 조회 -->
     <select id="findByEmail" parameterType="String" resultMap="memberAndAuthorityMap">
-        select member_id, member_nm, member_email, member_pwd, member_regdate
-        from member
-        where member_email = #{email}
+        select
+            member_id, member_nm, member_email, member_pwd, member_regdate
+        from
+            member
+        where
+            member_email = #{email}
+    </select>
+
+    <!-- Nick Name 으로 조회-->
+    <select id="findByName" parameterType="String" resultMap="memberAndAuthorityMap">
+        select
+            member_id, member_nm, member_email, member_pwd, member_regdate
+        from
+            member
+        where
+            member_nm = #{memberNm}
     </select>
 
     <!-- Collection (SELECT Authority) -->
     <select id="getAuthorityList" parameterType="String" resultType="String">
-        select auth_role
-        from member_authority
-        where auth_email = #{memberEmail}
+        select
+            auth_role
+        from
+            member_authority
+        where
+            auth_email = #{memberEmail}
     </select>
 </mapper>

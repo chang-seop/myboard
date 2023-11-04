@@ -10,4 +10,5 @@ public interface MemberRepository {
     Member save(Member user);
     void insertAuthority(List<Authority> authorities);
     Optional<Member> findByEmail(String email);
+    Optional<Member> findByName(String name);
 }

@@ -28,4 +28,9 @@ public class MyBatisMemberRepository implements MemberRepository {
     public Optional<Member> findByEmail(String email) {
         return memberMapper.findByEmail(email);
     }
+
+    @Override
+    public Optional<Member> findByName(String name) {
+        return memberMapper.findByName(name);
+    }
 }

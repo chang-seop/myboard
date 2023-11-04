@@ -58,7 +58,7 @@ public class MemberRepositoryTest {
         Optional<Member> findMember = memberRepository.findByEmail("hello1@naver.com");
 
         // then
-        assertThat(findMember.orElse(null).getMemberNm()).isEqualTo("한국");
+        assertThat(findMember.orElse(null).getMemberEmail()).isEqualTo("hello1@naver.com");
     }
 
     @Test
@@ -94,5 +94,23 @@ public class MemberRepositoryTest {
         assertThat(roles.size()).isEqualTo(2);
         assertThat(roles.contains(Role.USER.getAuth())).isTrue();
         assertThat(roles.contains(Role.ADMIN.getAuth())).isTrue();
+    }
+
+    @Test
+    void findByName() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+
+        memberRepository.save(member);
+
+        // when
+        Optional<Member> findMember = memberRepository.findByName("한국");
+
+        // then
+        assertThat(findMember.orElse(null).getMemberNm()).isEqualTo("한국");
     }
 }

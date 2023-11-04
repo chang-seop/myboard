@@ -13,4 +13,5 @@ public interface MemberMapper {
     void save(Member member);
     void insertAuthority(List<Authority> authorities);
     Optional<Member> findByEmail(@Param("email") String email);
+    Optional<Member> findByName(String name);
 }
