@@ -58,7 +58,7 @@ public class MemberController {
         }
         catch(DuplicateException e) {
             // 중복된 이메일 일 경우 (글로벌 오류 메세지)
-            bindingResult.reject("duplicateEmail", e.getMessage());
+            bindingResult.reject("duplicate", e.getMessage());
             return "signup";
         }
 

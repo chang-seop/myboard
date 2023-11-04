@@ -23,10 +23,16 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     @Transactional
     public void save(MemberSaveDto memberDto) {
-        // email 이 DB 에 중복되는지 확인
-        Optional<Member> findMember = memberRepository.findByEmail(memberDto.getMemberEmail());
-        if(findMember.isPresent()) {
+        // 이메일이 DB 에 중복되는지 확인
+        Optional<Member> emailCheckMember = memberRepository.findByEmail(memberDto.getMemberEmail());
+        if(emailCheckMember.isPresent()) {
             throw new DuplicateException("이미 존재하는 이메일입니다.");
+        }
+
+        // 닉네임이 DB 에 중복되는지 확인
+        Optional<Member> nameCheckMember = memberRepository.findByName(memberDto.getMemberNm());
+        if(nameCheckMember.isPresent()) {
+            throw new DuplicateException("이미 존재하는 닉네임입니다.");
         }
 
         // 저장
