@@ -128,7 +128,7 @@ public class BoardRepositoryTest {
         }
 
         BoardSearchDto search = new BoardSearchDto();
-        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), search);
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(search), search);
         search.setPagination(pagination);
 
         // when
@@ -163,7 +163,7 @@ public class BoardRepositoryTest {
         search.setSearchType("title");
         search.setKeyword("제목");
 
-        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), search);
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(search), search);
         search.setPagination(pagination);
 
         // when
@@ -198,7 +198,7 @@ public class BoardRepositoryTest {
         search.setSearchType("writer");
         search.setKeyword("한국");
 
-        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(), search);
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(search), search);
         search.setPagination(pagination);
 
         // when
@@ -228,8 +228,12 @@ public class BoardRepositoryTest {
             boardRepository.save(board);
         }
 
+        BoardSearchDto search = new BoardSearchDto();
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(search), search);
+        search.setPagination(pagination);
+
         // when
-        Integer maxCount = boardRepository.getPageMaxCount();
+        Integer maxCount = boardRepository.getPageMaxCount(search);
 
         // then
         Assertions.assertThat(maxCount).isEqualTo(20);
