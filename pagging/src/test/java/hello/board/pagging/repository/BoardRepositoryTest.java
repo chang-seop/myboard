@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -344,5 +345,59 @@ public class BoardRepositoryTest {
         BoardFile boardFile = findBoardFile.orElse(null);
         assert boardFile != null;
         Assertions.assertThat(boardFile.getFileList().size()).isEqualTo(5);
+    }
+
+    void findDeleteSetup() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter(member.getMemberNm())
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .boardDeleteDate(LocalDateTime.now())
+                .build();
+
+        boardRepository.save(board);
+        // when
+        List<Board> deleteSetup = boardRepository.findDeleteSetup();
+
+        // then
+        Assertions.assertThat(deleteSetup.size()).isEqualTo(1);
+    }
+
+    @Test
+    void remove() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter(member.getMemberNm())
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .build();
+
+        boardRepository.save(board);
+
+        // when
+        boardRepository.remove(board.getBoardId());
+
+        // then
+        Optional<Board> findBoard = boardRepository.findById(board.getBoardId());
+        Assertions.assertThat(findBoard.orElse(null)).isNull();
     }
 }

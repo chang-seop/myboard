@@ -18,4 +18,6 @@ public interface BoardRepository {
     Optional<BoardFile> findBoardFileById(Long id);
     void deleteSetupByBoardIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") Long memberId);
     void updateByBoard(Board board);
+    List<Board> findDeleteSetup();
+    void remove(Long boardId);
 }

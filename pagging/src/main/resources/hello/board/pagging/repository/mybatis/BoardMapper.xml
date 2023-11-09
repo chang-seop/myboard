@@ -54,6 +54,23 @@
             b.board_regdate desc limit #{pagination.limitStart}, #{recordSize}
     </select>
 
+    <!-- 7일 이후에 삭제하기 위한 SQL (스프링 배치) -->
+    <select id="findDeleteSetup" resultType="Board">
+        select
+            <include refid="boardColumns"/>
+        from
+            board as b
+        where
+            b.board_delete_date is not null
+    </select>
+
+    <delete id="remove">
+        delete from
+            board
+        where
+            board_id = #{boardId}
+    </delete>
+
     <select id="getPageMaxCount" parameterType="hello.board.pagging.model.board.BoardSearchDto" resultType="Integer">
         select
             count(*)
