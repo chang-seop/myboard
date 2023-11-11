@@ -68,7 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatcher("/**").authorizeRequests() // 보호된 리소스 URI 에 접근할 수 있는 권한
                 .antMatchers("/", "/members/signupView", "/members/signup", "/members/loginView").permitAll() // 전체 접근 허용
                 .antMatchers("/board/**").hasAnyRole("ADMIN", "USER") // ROLE_ADMIN 혹은 ROLE_USER 권한을 가진 사용자만 접근 허용
-                .antMatchers("/members/admin/**").hasRole("ADMIN") // ROLE_ADMIN 권한을 가진 사용자만 접근 허용
+                .antMatchers("/admin/**").hasRole("ADMIN") // ROLE_ADMIN 권한을 가진 사용자만 접근 허용
 
                 // 그 외 항목 전부 인증 적용
                 .anyRequest()

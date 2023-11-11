@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html th:replace="~{layouts/homeLayout :: homeLayout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Recovery Board</title>
+</head>
+<body>
+
+<section>
+    <div id="list">
+        <div class="card w-75 p-3 my-2" style="float: none; margin:0 auto;" th:each="board : ${boardDtoList}">
+            <div class="card-header">
+                <span class="d-inline" th:text="${board.boardTitle}"></span>
+                <form class="d-inline" method="post" th:action="@{/board/recover}">
+                    <input type="hidden" th:name="boardId" th:id="boardId" th:value="${board.boardId}">
+                    <button type="submit" th:text="복구"></button>
+                </form>
+            </div>
+            <div class="card-body">
+                <span th:text="${board.boardWriter}">작성자</span>
+                <span th:text="${#temporals.format(board.boardRegdate, 'yyyy년 MM월 dd일 HH시 mm분')}">날짜</span>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

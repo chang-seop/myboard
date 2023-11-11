@@ -194,4 +194,27 @@ public class BoardController {
 
         return "redirect:/board";
     }
+
+    /**
+     * 게시글 복구 페이지
+     */
+    @GetMapping("/recoverView")
+    public String boardRecoverForm(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
+                                   Model model) {
+        List<BoardDto> boardDtoList = boardService.findDeleteSetupBoard(memberDetailsDto.getMember().getMemberId());
+        model.addAttribute("boardDtoList", boardDtoList);
+        return "boardRecover";
+    }
+
+    /**
+     * 게시글 복구
+     */
+    @PostMapping("/recover")
+    public String boardRecover(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
+                               @RequestParam("boardId") Long boardId) {
+
+        boardService.updateRecoverBoard(memberDetailsDto.getMember().getMemberId(), boardId);
+
+        return "redirect:/board";
+    }
 }

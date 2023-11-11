@@ -400,4 +400,61 @@ public class BoardRepositoryTest {
         Optional<Board> findBoard = boardRepository.findById(board.getBoardId());
         Assertions.assertThat(findBoard.orElse(null)).isNull();
     }
+
+    @Test
+    void findDeleteSetupByMemberId() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter(member.getMemberNm())
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .build();
+
+        boardRepository.save(board);
+        boardRepository.deleteSetupByBoardIdAndMemberId(board.getBoardId(), member.getMemberId());
+        // when
+        List<Board> findBoard = boardRepository.findDeleteSetupByMemberId(member.getMemberId());
+
+        // then
+        Assertions.assertThat(findBoard.size()).isEqualTo(1);
+    }
+
+    @Test
+    void updateRecoverByBoardIdAndMemberId() {
+        // given
+        Member member = Member.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+
+        memberRepository.save(member);
+
+        Board board = Board.builder()
+                .boardWriter(member.getMemberNm())
+                .memberId(member.getMemberId())
+                .boardTitle("제목")
+                .boardContent("글")
+                .build();
+
+        boardRepository.save(board);
+        boardRepository.deleteSetupByBoardIdAndMemberId(board.getBoardId(), member.getMemberId());
+
+        // when
+        int result = boardRepository.updateRecoverByBoardIdAndMemberId(board.getBoardId(), member.getMemberId());
+
+        // then
+        List<Board> findBoard = boardRepository.findDeleteSetupByMemberId(member.getMemberId());
+        Assertions.assertThat(findBoard.size()).isEqualTo(0);
+        Assertions.assertThat(result).isEqualTo(1);
+    }
 }

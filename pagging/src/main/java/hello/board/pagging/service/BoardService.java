@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -110,15 +110,10 @@ public class BoardService {
         // 계산된 페이지 정보의 일부(limitStart, recordSize)를 기준으로 리스트 데이터 조회 후 응답 데이터 반환
         List<Board> findAll = boardRepository.findAll(params);
 
-        List<BoardDto> boardDtoList = new ArrayList<>();
-        findAll.stream().forEach(board -> boardDtoList.add(BoardDto.builder()
-                .boardId(board.getBoardId())
-                .memberId(board.getMemberId())
-                .boardWriter(board.getBoardWriter())
-                .boardTitle(board.getBoardTitle())
-                .boardContent(board.getBoardContent())
-                .boardRegdate(board.getBoardRegdate())
-                .build()));
+        List<BoardDto> boardDtoList = findAll
+                .stream()
+                .map(Board::toDto)
+                .collect(Collectors.toList());
 
         return new PagingResponseDto<>(boardDtoList, pagination);
     }
@@ -186,6 +181,34 @@ public class BoardService {
 
         if(!fileStore.removeFiles(deletedFileList)) {
             throw new CustomFileUploadException("파일을 삭제하지 못했습니다.");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardDto> findDeleteSetupBoard(Long memberId) {
+        List<Board> findBoard = boardRepository.findDeleteSetupByMemberId(memberId);
+
+        return findBoard.stream()
+                .map(Board::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateRecoverBoard(Long memberId, Long boardId) {
+        // 게시글이 있는지 확인
+        Board findBoard = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BadRequestException("게시글이 존재하지 않습니다."));
+
+        // 사용자의 게시글인지 확인
+        if(!findBoard.getMemberId().equals(memberId)) {
+            throw new BadRequestException("사용자의 게시글이 아닙니다.");
+        }
+
+        int result = boardRepository.updateRecoverByBoardIdAndMemberId(boardId, memberId);
+
+        if(result == 0) {
+            // 업데이트 실패
+            throw new BadRequestException("이미 복구된 게시글 또는 게시글을 복구할 수 없습니다.");
         }
     }
 }

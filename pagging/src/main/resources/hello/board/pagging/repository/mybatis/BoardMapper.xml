@@ -64,6 +64,26 @@
             b.board_delete_date is not null
     </select>
 
+    <!-- 사용자가 게시글 복구하기 위한 조회 SQL -->
+    <select id="findDeleteSetupByMemberId" parameterType="Long" resultType="Board">
+        select
+            <include refid="boardColumns"/>
+        from
+            board as b
+        where
+             b.board_delete_date is not null and b.member_id = #{memberId}
+    </select>
+
+    <!-- 사용자가 게시글 복구하기 위한 수정 SQL -->
+    <update id="updateRecoverByBoardIdAndMemberId">
+        update
+            board as b
+        set
+            b.board_delete_date = null
+        where
+            b.board_delete_date is not null and b.board_id = #{boardId} and b.member_id = #{memberId}
+    </update>
+
     <delete id="remove">
         delete from
             board
@@ -119,15 +139,15 @@
             b.board_id = #{id}
     </select>
 
-    <!-- DELETE -->
-    <delete id="deleteSetupByBoardIdAndMemberId" parameterType="Long">
+    <!-- DELETE Setup -->
+    <update id="deleteSetupByBoardIdAndMemberId">
         update
             board as b
         set
             b.board_delete_date = now()
         where
             b.board_id = #{boardId} and b.member_id = #{memberId}
-    </delete>
+    </update>
 
     <!-- UPDATE -->
     <update id="updateByBoard" parameterType="Board">

@@ -66,4 +66,14 @@ public class MyBatisBoardRepository implements BoardRepository {
     public void remove(Long boardId) {
         boardMapper.remove(boardId);
     }
+
+    @Override
+    public List<Board> findDeleteSetupByMemberId(Long memberId) {
+        return boardMapper.findDeleteSetupByMemberId(memberId);
+    }
+
+    @Override
+    public int updateRecoverByBoardIdAndMemberId(Long boardId, Long memberId) {
+        return boardMapper.updateRecoverByBoardIdAndMemberId(boardId, memberId);
+    }
 }

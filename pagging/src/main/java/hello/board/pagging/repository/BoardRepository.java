@@ -2,9 +2,7 @@ package hello.board.pagging.repository;
 
 import hello.board.pagging.domain.Board;
 import hello.board.pagging.domain.BoardFile;
-import hello.board.pagging.model.Search;
 import hello.board.pagging.model.board.BoardSearchDto;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +14,10 @@ public interface BoardRepository {
     List<Board> findAll(BoardSearchDto params);
     Integer getPageMaxCount(BoardSearchDto search);
     Optional<BoardFile> findBoardFileById(Long id);
-    void deleteSetupByBoardIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") Long memberId);
+    void deleteSetupByBoardIdAndMemberId(Long boardId, Long memberId);
     void updateByBoard(Board board);
     List<Board> findDeleteSetup();
     void remove(Long boardId);
+    List<Board> findDeleteSetupByMemberId(Long memberId);
+    int updateRecoverByBoardIdAndMemberId(Long boardId, Long memberId);
 }

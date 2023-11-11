@@ -22,4 +22,6 @@ public interface BoardMapper {
     void updateByBoard(Board board);
     List<Board> findDeleteSetup();
     void remove(Long boardId);
+    List<Board> findDeleteSetupByMemberId(Long memberId);
+    int updateRecoverByBoardIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") Long memberId);
 }

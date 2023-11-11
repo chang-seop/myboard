@@ -1,5 +1,6 @@
 package hello.board.pagging.domain;
 
+import hello.board.pagging.model.board.BoardDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,5 +30,18 @@ public class Board {
         this.boardRegdate = boardRegdate;
         this.boardUpdateDate = boardUpdateDate;
         this.boardDeleteDate = boardDeleteDate;
+    }
+
+    public BoardDto toDto() {
+        return BoardDto.builder()
+                .boardId(boardId)
+                .memberId(memberId)
+                .boardWriter(boardWriter)
+                .boardTitle(boardTitle)
+                .boardContent(boardContent)
+                .boardRegdate(boardRegdate)
+                .boardUpdateDate(boardUpdateDate)
+                .boardDeleteDate(boardDeleteDate)
+                .build();
     }
 }
