@@ -131,7 +131,7 @@
     <select id="findBoardFileById" parameterType="Long" resultMap="BoardFileMap">
         select
             b.board_id, b.member_id, b.board_writer, b.board_title, b.board_content, b.board_regdate, b.board_update_date, b.board_delete_date,
-            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_image_yn, f.file_regdate,
+            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_image_yn, f.file_regdate
         from
         board as b
             left outer join file as f on b.board_id = f.board_id
