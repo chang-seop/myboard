@@ -32,8 +32,8 @@
             <!-- (히든 값) 파일 업로드 시 변경 된 내역을 확인하기 위해 사용 -->
             <div>
                 <p name="attachTag">등록된 첨부파일</p>
-                <div class="d-inline form-group my-2" th:each="file, fileStat : ${fileList}" th:if="${!file.fileImageYn}">
-                    <div>
+                <div class="d-inline form-group my-2" th:each="file, fileStat : ${fileList}" th:if="${file != null}">
+                    <div th:if="|${file.fileImageYn == false}|">
                         <span class="text-primary" name="attachFileName" th:text="${file.uploadFileName}"></span>
                         <input type="hidden" th:value="${file.fileId}" th:name="|fileIdList[${fileStat.index}]|">
                         <button type="button" name="attachFileNameButton" class="btn-close" aria-label="Close"></button>
@@ -47,8 +47,8 @@
 
             <div>
                 <p name="imageTag">등록된 이미지 파일</p>
-                <div class="d-inline form-group my-2" th:each="file, fileStat : ${fileList}" th:if="${file.fileImageYn}">
-                    <div>
+                <div class="d-inline form-group my-2" th:each="file, fileStat : ${fileList}" th:if="${file != null}">
+                    <div th:if="|${file.fileImageYn == true}|">
                         <span class="text-primary" name="|imageFileNames fileId${fileStat.index}|" th:text="${file.uploadFileName}"></span>
                         <input type="hidden" th:value="${file.fileId}" th:name="|fileIdList[${fileStat.index}]|">
                         <button type="button" name="imageFileNamesButton" class="btn-close" aria-label="Close"></button>

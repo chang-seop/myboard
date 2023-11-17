@@ -175,12 +175,7 @@ public class BoardController {
         boardModifyDto.setBoardTitle(boardAndFiles.getBoardTitle());
         boardModifyDto.setBoardContent(boardAndFiles.getBoardContent());
 
-        List<File> fileList = null;
-        if(!ObjectUtils.isEmpty(boardAndFiles.getFileList())) {
-            fileList = boardAndFiles.getFileList();
-        }
-
-        model.addAttribute("fileList", fileList);
+        model.addAttribute("fileList", boardAndFiles.getFileList());
         model.addAttribute("fileMaxSize", fileMaxSize);
     }
 
