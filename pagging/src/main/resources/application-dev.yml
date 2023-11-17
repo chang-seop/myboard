@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/pagging;MODE=mysql
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+#File Size (MB)
+file:
+  maxSize: 10
+  dir: F:/test-file/

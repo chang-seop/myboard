@@ -1,0 +1,36 @@
+spring:
+  config:
+    activate:
+      on-profile: common
+  logging:
+    level:
+      nineto6:
+        Talk: trace
+  batch:
+    initialize-schema: always
+    job:
+      enabled: false
+  servlet:
+    multipart:
+      maxFileSize: 10MB
+      maxRequestSize: 10MB
+
+#MyBatis
+mybatis:
+  type-aliases-package: hello.board.pagging.domain
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    hello:
+      board:
+        pagging:
+          repository:
+            mybatis: trace
+
+#Sessions
+server:
+  servlet:
+    session:
+      timeout: 1800
