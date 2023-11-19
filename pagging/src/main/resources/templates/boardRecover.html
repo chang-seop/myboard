@@ -16,6 +16,7 @@
                 </form>
             </div>
             <div class="card-body">
+                <p th:text="${board.boardContent}">미리보기 글</p>
                 <span th:text="${board.boardWriter}">작성자</span>
                 <span th:text="${#temporals.format(board.boardRegdate, 'yyyy년 MM월 dd일 HH시 mm분')}">날짜</span>
             </div>
