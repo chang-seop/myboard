@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hello.board.myboard.repository.mybatis.MemberMapper">
+
+    <!-- 멤버 등록 -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="memberId">
+        insert into
+            member (member_nm, member_email, member_pwd, member_regdate)
+        values (#{memberNm}, #{memberEmail}, #{memberPwd}, now())
+    </insert>
+
+    <!-- 멤버 권한 등록 -->
+    <insert id="insertAuthority" parameterType="List" useGeneratedKeys="true" keyProperty="authorityId">
+        insert into member_authority (member_id, auth_email, auth_role)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.memberId}, #{item.authEmail}, #{item.authRole})
+        </foreach>
+    </insert>
+
+    <!-- ResultMap 작성 -->
+    <resultMap id="memberAndAuthorityMap" type="hello.board.myboard.domain.Member">
+        <id property="memberId" column="member_id"/>
+        <result property="memberNm" column="member_nm"/>
+        <result property="memberEmail" column="member_email"/>
+        <result property="memberPwd" column="member_pwd"/>
+        <result property="memberRegdate" column="member_regdate"/>
+        <collection property="memberRoles" column="member_email" javaType="java.util.List" select="getAuthorityList"/>
+    </resultMap>
+
+    <!-- * Main * email 로 조회 -->
+    <select id="findByEmail" parameterType="String" resultMap="memberAndAuthorityMap">
+        select
+            member_id, member_nm, member_email, member_pwd, member_regdate
+        from
+            member
+        where
+            member_email = #{email}
+    </select>
+
+    <!-- Nick Name 으로 조회-->
+    <select id="findByName" parameterType="String" resultMap="memberAndAuthorityMap">
+        select
+            member_id, member_nm, member_email, member_pwd, member_regdate
+        from
+            member
+        where
+            member_nm = #{memberNm}
+    </select>
+
+    <!-- Collection (SELECT Authority) -->
+    <select id="getAuthorityList" parameterType="String" resultType="String">
+        select
+            auth_role
+        from
+            member_authority
+        where
+            auth_email = #{memberEmail}
+    </select>
+</mapper>

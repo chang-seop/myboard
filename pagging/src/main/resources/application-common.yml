@@ -17,7 +17,7 @@ spring:
 
 #MyBatis
 mybatis:
-  type-aliases-package: hello.board.pagging.domain
+  type-aliases-package: hello.board.myboard.domain
   configuration:
     map-underscore-to-camel-case: true
 
@@ -25,7 +25,7 @@ logging:
   level:
     hello:
       board:
-        pagging:
+        myboard:
           repository:
             mybatis: trace
 

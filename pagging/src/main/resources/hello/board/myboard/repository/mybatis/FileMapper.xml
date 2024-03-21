@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hello.board.myboard.repository.mybatis.FileMapper">
+    <sql id="fileColumns">
+        file_id, board_id, upload_file_name, store_file_name, file_image_yn, file_regdate
+    </sql>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="fileId">
+        insert into
+        file (board_id, upload_file_name, store_file_name, file_image_yn, file_regdate)
+        values
+        (#{boardId}, #{uploadFileName}, #{storeFileName}, #{fileImageYn}, now())
+    </insert>
+
+    <insert id="saveAll" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="fileId">
+        insert into
+        file (board_id, upload_file_name, store_file_name, file_image_yn, file_regdate)
+        values
+        <foreach collection="list" item="item" separator=" , ">
+            (#{item.boardId}, #{item.uploadFileName}, #{item.storeFileName}, #{item.fileImageYn}, now())
+        </foreach>
+    </insert>
+
+    <!-- 찾고자하는 파일 -->
+    <select id="findByBoardIdAndFileImageYn" resultType="File">
+        select
+            <include refid="fileColumns"/>
+        from
+            file
+        where
+            board_id = #{boardId} and file_image_yn = #{fileImageYn}
+    </select>
+
+    <select id="findById" parameterType="Long" resultType="File">
+        select
+            <include refid="fileColumns"/>
+        from
+            file
+        where
+            file_id = #{fileId}
+    </select>
+
+    <select id="findByBoardId" parameterType="Long" resultType="File">
+        select
+            <include refid="fileColumns"/>
+        from
+            file
+        where
+            board_id = #{boardId}
+    </select>
+
+    <select id="findByStoreFileName" parameterType="String" resultType="File">
+        select
+            <include refid="fileColumns"/>
+        from
+            file
+        where
+            store_file_name = #{storeFileName}
+    </select>
+
+    <delete id="deleteById" parameterType="Long">
+        delete from
+            file as f
+        where
+            f.file_id = #{fileId}
+    </delete>
+
+    <delete id="deleteByStoreFileName" parameterType="String">
+        delete from
+            file as f
+        where
+            f.store_file_name = #{storeFileName}
+    </delete>
+</mapper>
