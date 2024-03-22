@@ -1,17 +1,17 @@
 package hello.board.myboard.repository;
 
-import hello.board.myboard.domain.File;
+import hello.board.myboard.vo.FileVo;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface FileRepository {
-    void save(File file);
-    void saveAll(List<File> files);
-    Optional<File> findById(Long fileId);
-    List<File> findByBoardId(Long boardId);
-    List<File> findByBoardIdAndFileImageYn(Long boardId, Boolean fileImageYn);
-    Optional<File> findByStoreFileName(String storeFileName);
+    void save(FileVo fileVo);
+    void saveAll(List<FileVo> fileVos);
+    Optional<FileVo> findById(Long fileId);
+    List<FileVo> findByBoardId(Long boardId);
+    List<FileVo> findByBoardIdAndFileImageYn(Long boardId, Boolean fileImageYn);
+    Optional<FileVo> findByStoreFileName(String storeFileName);
     void deleteById(Long fileId);
     void deleteByStoreFileName(String storeFileName);
 }

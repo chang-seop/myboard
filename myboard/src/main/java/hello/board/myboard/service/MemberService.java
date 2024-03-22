@@ -1,10 +1,10 @@
 package hello.board.myboard.service;
 
 import hello.board.myboard.common.exception.DuplicateException;
-import hello.board.myboard.domain.Authority;
-import hello.board.myboard.domain.Member;
-import hello.board.myboard.model.Role;
-import hello.board.myboard.model.member.MemberSaveDto;
+import hello.board.myboard.vo.AuthorityVo;
+import hello.board.myboard.vo.MemberVo;
+import hello.board.myboard.dto.member.code.Role;
+import hello.board.myboard.dto.member.MemberSaveDto;
 import hello.board.myboard.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,31 +23,31 @@ public class MemberService {
     @Transactional
     public void save(MemberSaveDto memberDto) {
         // 이메일이 DB 에 중복되는지 확인
-        Optional<Member> emailCheckMember = memberRepository.findByEmail(memberDto.getMemberEmail());
+        Optional<MemberVo> emailCheckMember = memberRepository.findByEmail(memberDto.getMemberEmail());
         if(emailCheckMember.isPresent()) {
             throw new DuplicateException("이미 존재하는 이메일입니다.");
         }
 
         // 닉네임이 DB 에 중복되는지 확인
-        Optional<Member> nameCheckMember = memberRepository.findByName(memberDto.getMemberNm());
+        Optional<MemberVo> nameCheckMember = memberRepository.findByName(memberDto.getMemberNm());
         if(nameCheckMember.isPresent()) {
             throw new DuplicateException("이미 존재하는 닉네임입니다.");
         }
 
         // 저장
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberNm(memberDto.getMemberNm())
                 .memberEmail(memberDto.getMemberEmail())
                 .memberPwd(passwordEncoder.encode(memberDto.getMemberPwd())) // 암호화 처리
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        List<Authority> authList = new ArrayList<>();
+        List<AuthorityVo> authList = new ArrayList<>();
         // 유저 권한 등록
-        Authority auth = Authority.builder()
-                .memberId(member.getMemberId())
-                .authEmail(member.getMemberEmail())
+        AuthorityVo auth = AuthorityVo.builder()
+                .memberId(memberVo.getMemberId())
+                .authEmail(memberVo.getMemberEmail())
                 .authRole(Role.USER.getAuth()).build();
 
         authList.add(auth);
@@ -56,7 +56,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Member> login(String email) {
+    public Optional<MemberVo> login(String email) {
         return memberRepository.findByEmail(email);
     }
 }

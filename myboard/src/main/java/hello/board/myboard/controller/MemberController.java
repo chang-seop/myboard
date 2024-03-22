@@ -1,8 +1,8 @@
 package hello.board.myboard.controller;
 
 import hello.board.myboard.common.exception.DuplicateException;
-import hello.board.myboard.model.member.MemberLoginDto;
-import hello.board.myboard.model.member.MemberSaveDto;
+import hello.board.myboard.dto.member.MemberLoginDto;
+import hello.board.myboard.dto.member.MemberSaveDto;
 import hello.board.myboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

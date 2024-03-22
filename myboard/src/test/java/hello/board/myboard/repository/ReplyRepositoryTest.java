@@ -1,10 +1,10 @@
 package hello.board.myboard.repository;
 
-import hello.board.myboard.domain.Board;
-import hello.board.myboard.domain.Member;
-import hello.board.myboard.domain.Reply;
-import hello.board.myboard.model.Pagination;
-import hello.board.myboard.model.reply.ReplySearchDto;
+import hello.board.myboard.vo.BoardVo;
+import hello.board.myboard.vo.MemberVo;
+import hello.board.myboard.vo.ReplyVo;
+import hello.board.myboard.dto.Pagination;
+import hello.board.myboard.dto.reply.ReplySearchDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,134 +28,134 @@ public class ReplyRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    private Member initMember() {
-        Member member = Member.builder()
+    private MemberVo initMember() {
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
-        memberRepository.save(member);
-        return member;
+        memberRepository.save(memberVo);
+        return memberVo;
     }
 
-    private Board initBoard(Member member) {
-        Board board = Board.builder()
+    private BoardVo initBoard(MemberVo memberVo) {
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
-        return board;
+        boardRepository.save(boardVo);
+        return boardVo;
     }
 
     @Test
     void save() {
         // given
-        Member member = initMember();
-        Board board = initBoard(member);
+        MemberVo memberVo = initMember();
+        BoardVo boardVo = initBoard(memberVo);
 
-        Reply reply = Reply.builder()
-                .boardId(board.getBoardId())
-                .memberId(member.getMemberId())
-                .replyWriter(member.getMemberNm())
+        ReplyVo replyVo = ReplyVo.builder()
+                .boardId(boardVo.getBoardId())
+                .memberId(memberVo.getMemberId())
+                .replyWriter(memberVo.getMemberNm())
                 .replyContent("댓글")
                 .build();
 
         // when
-        Reply saveReply = replyRepository.save(reply);
+        ReplyVo saveReplyVo = replyRepository.save(replyVo);
 
         // then
-        assertThat(saveReply).isNotNull();
+        assertThat(saveReplyVo).isNotNull();
     }
 
     @Test
     void findById() {
         // given
-        Member member = initMember();
-        Board board = initBoard(member);
+        MemberVo memberVo = initMember();
+        BoardVo boardVo = initBoard(memberVo);
 
-        Reply reply = Reply.builder()
-                .boardId(board.getBoardId())
-                .memberId(member.getMemberId())
-                .replyWriter(member.getMemberNm())
+        ReplyVo replyVo = ReplyVo.builder()
+                .boardId(boardVo.getBoardId())
+                .memberId(memberVo.getMemberId())
+                .replyWriter(memberVo.getMemberNm())
                 .replyContent("댓글")
                 .build();
-        Reply saveReply = replyRepository.save(reply);
+        ReplyVo saveReplyVo = replyRepository.save(replyVo);
 
         // when
-        Optional<Reply> replyOptional = replyRepository.findById(reply.getReplyId());
+        Optional<ReplyVo> replyOptional = replyRepository.findById(replyVo.getReplyId());
 
         // then
-        assertThat(replyOptional.orElseThrow(() -> new RuntimeException("exception"))).isInstanceOf(Reply.class);
+        assertThat(replyOptional.orElseThrow(() -> new RuntimeException("exception"))).isInstanceOf(ReplyVo.class);
     }
 
     @Test
     void findByMemberId() {
         // given
-        Member member = initMember();
-        Board board = initBoard(member);
+        MemberVo memberVo = initMember();
+        BoardVo boardVo = initBoard(memberVo);
 
         for (int i = 0; i < 5; i++) {
-            Reply reply = Reply.builder()
-                    .boardId(board.getBoardId())
-                    .memberId(member.getMemberId())
-                    .replyWriter(member.getMemberNm())
+            ReplyVo replyVo = ReplyVo.builder()
+                    .boardId(boardVo.getBoardId())
+                    .memberId(memberVo.getMemberId())
+                    .replyWriter(memberVo.getMemberNm())
                     .replyContent("댓글" + i)
                     .build();
-            replyRepository.save(reply);
+            replyRepository.save(replyVo);
         }
 
         // when
-        List<Reply> findReply = replyRepository.findByMemberId(member.getMemberId());
+        List<ReplyVo> findReplyVo = replyRepository.findByMemberId(memberVo.getMemberId());
 
         // then
-        assertThat(findReply.size()).isEqualTo(5);
+        assertThat(findReplyVo.size()).isEqualTo(5);
     }
 
     @Test
     void findByBoardId() {
         // given
-        Member member = initMember();
-        Board board = initBoard(member);
+        MemberVo memberVo = initMember();
+        BoardVo boardVo = initBoard(memberVo);
 
         for (int i = 0; i < 5; i++) {
-            Reply reply = Reply.builder()
-                    .boardId(board.getBoardId())
-                    .memberId(member.getMemberId())
-                    .replyWriter(member.getMemberNm())
+            ReplyVo replyVo = ReplyVo.builder()
+                    .boardId(boardVo.getBoardId())
+                    .memberId(memberVo.getMemberId())
+                    .replyWriter(memberVo.getMemberNm())
                     .replyContent("댓글" + i)
                     .build();
-            replyRepository.save(reply);
+            replyRepository.save(replyVo);
         }
 
         // when
-        List<Reply> findReply = replyRepository.findByBoardId(board.getBoardId());
+        List<ReplyVo> findReplyVo = replyRepository.findByBoardId(boardVo.getBoardId());
 
         // then
-        assertThat(findReply.size()).isEqualTo(5);
+        assertThat(findReplyVo.size()).isEqualTo(5);
     }
 
     @Test
     void deleteById() {
         // given
-        Member member = initMember();
-        Board board = initBoard(member);
+        MemberVo memberVo = initMember();
+        BoardVo boardVo = initBoard(memberVo);
 
-        Reply reply = Reply.builder()
-                .boardId(board.getBoardId())
-                .memberId(member.getMemberId())
-                .replyWriter(member.getMemberNm())
+        ReplyVo replyVo = ReplyVo.builder()
+                .boardId(boardVo.getBoardId())
+                .memberId(memberVo.getMemberId())
+                .replyWriter(memberVo.getMemberNm())
                 .replyContent("댓글")
                 .build();
-        replyRepository.save(reply);
+        replyRepository.save(replyVo);
 
         // when
-        replyRepository.deleteById(reply.getReplyId());
+        replyRepository.deleteById(replyVo.getReplyId());
 
         // then
-        Optional<Reply> findReply = replyRepository.findById(reply.getReplyId());
+        Optional<ReplyVo> findReply = replyRepository.findById(replyVo.getReplyId());
         assertThatThrownBy(() -> findReply.orElseThrow(RuntimeException::new))
                 .isInstanceOf(RuntimeException.class);
     }
@@ -163,49 +163,49 @@ public class ReplyRepositoryTest {
     @Test
     void findPageByBoardId() {
         // given
-        Member member = initMember();
-        Board board = initBoard(member);
+        MemberVo memberVo = initMember();
+        BoardVo boardVo = initBoard(memberVo);
 
         for (int i = 0; i < 10; i++) {
-            Reply reply = Reply.builder()
-                    .boardId(board.getBoardId())
-                    .memberId(member.getMemberId())
-                    .replyWriter(member.getMemberNm())
+            ReplyVo replyVo = ReplyVo.builder()
+                    .boardId(boardVo.getBoardId())
+                    .memberId(memberVo.getMemberId())
+                    .replyWriter(memberVo.getMemberNm())
                     .replyContent("댓글" + i)
                     .build();
-            replyRepository.save(reply);
+            replyRepository.save(replyVo);
         }
 
-        Integer count = replyRepository.findPageMaxCountByBoardId(board.getBoardId());
+        Integer count = replyRepository.findPageMaxCountByBoardId(boardVo.getBoardId());
         ReplySearchDto replySearchDto = new ReplySearchDto();
         Pagination pagination = new Pagination(count, replySearchDto);
         replySearchDto.setPagination(pagination);
 
         // when
-        List<Reply> findReply = replyRepository.findPageByBoardId(replySearchDto, board.getBoardId());
+        List<ReplyVo> findReplyVo = replyRepository.findPageByBoardId(replySearchDto, boardVo.getBoardId());
 
         // then
-        assertThat(findReply.size()).isEqualTo(5); // 페이지네이션 (pageSize 는 5)
+        assertThat(findReplyVo.size()).isEqualTo(5); // 페이지네이션 (pageSize 는 5)
     }
 
     @Test
     void findPageMaxCountByBoardId() {
         // given
-        Member member = initMember();
-        Board board = initBoard(member);
+        MemberVo memberVo = initMember();
+        BoardVo boardVo = initBoard(memberVo);
 
         for (int i = 0; i < 10; i++) {
-            Reply reply = Reply.builder()
-                    .boardId(board.getBoardId())
-                    .memberId(member.getMemberId())
-                    .replyWriter(member.getMemberNm())
+            ReplyVo replyVo = ReplyVo.builder()
+                    .boardId(boardVo.getBoardId())
+                    .memberId(memberVo.getMemberId())
+                    .replyWriter(memberVo.getMemberNm())
                     .replyContent("댓글" + i)
                     .build();
-            replyRepository.save(reply);
+            replyRepository.save(replyVo);
         }
 
         // when
-        Integer count = replyRepository.findPageMaxCountByBoardId(board.getBoardId());
+        Integer count = replyRepository.findPageMaxCountByBoardId(boardVo.getBoardId());
 
         // then
         assertThat(count).isEqualTo(10);

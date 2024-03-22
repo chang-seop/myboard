@@ -17,7 +17,7 @@ spring:
 
 #MyBatis
 mybatis:
-  type-aliases-package: hello.board.myboard.domain
+  type-aliases-package: hello.board.myboard.vo, hello.board.myboard.dto
   configuration:
     map-underscore-to-camel-case: true
 
@@ -27,7 +27,7 @@ logging:
       board:
         myboard:
           repository:
-            mybatis: trace
+            dao: trace
 
 #Sessions
 server:

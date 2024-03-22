@@ -1,8 +1,8 @@
 package hello.board.myboard.repository;
 
-import hello.board.myboard.domain.*;
-import hello.board.myboard.model.Pagination;
-import hello.board.myboard.model.board.BoardSearchDto;
+import hello.board.myboard.vo.*;
+import hello.board.myboard.dto.Pagination;
+import hello.board.myboard.dto.board.BoardSearchDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,101 +31,101 @@ public class BoardRepositoryTest {
     @Test
     public void create() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
         // when
-        Board findBoard = boardRepository.save(board);
+        BoardVo findBoardVo = boardRepository.save(boardVo);
 
         // then
-        Assertions.assertThat(findBoard.getMemberId()).isEqualTo(member.getMemberId());
+        Assertions.assertThat(findBoardVo.getMemberId()).isEqualTo(memberVo.getMemberId());
     }
 
     @Test
     public void findById() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        Board createdBoard = boardRepository.save(board);
+        BoardVo createdBoardVo = boardRepository.save(boardVo);
 
         // when
-        Optional<Board> findBoard = boardRepository.findById(createdBoard.getBoardId());
+        Optional<BoardVo> findBoard = boardRepository.findById(createdBoardVo.getBoardId());
 
         // then
-        Assertions.assertThat(findBoard.get().getBoardId()).isEqualTo(createdBoard.getBoardId());
+        Assertions.assertThat(findBoard.get().getBoardId()).isEqualTo(createdBoardVo.getBoardId());
     }
 
     @Test
     public void findByMemberId() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
         for(int i = 0; i < 2; i++) {
-            Board board = Board.builder()
+            BoardVo boardVo = BoardVo.builder()
                     .boardWriter("한국")
-                    .memberId(member.getMemberId())
+                    .memberId(memberVo.getMemberId())
                     .boardTitle("제목" + i)
                     .boardContent("글" + i)
                     .build();
-            boardRepository.save(board);
+            boardRepository.save(boardVo);
         }
 
         // when
-        List<Board> findBoardList = boardRepository.findByMemberId(member.getMemberId());
+        List<BoardVo> findBoardListVo = boardRepository.findByMemberId(memberVo.getMemberId());
 
         // then
-        Assertions.assertThat(findBoardList.get(0).getBoardWriter()).isEqualTo("한국");
-        Assertions.assertThat(findBoardList.get(1).getBoardWriter()).isEqualTo("한국");
+        Assertions.assertThat(findBoardListVo.get(0).getBoardWriter()).isEqualTo("한국");
+        Assertions.assertThat(findBoardListVo.get(1).getBoardWriter()).isEqualTo("한국");
     }
 
     @Test
     public void findAll() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
         for(int i = 0; i < 20; i++) {
-            Board board = Board.builder()
+            BoardVo boardVo = BoardVo.builder()
                     .boardWriter("한국")
-                    .memberId(member.getMemberId())
+                    .memberId(memberVo.getMemberId())
                     .boardTitle("제목" + i)
                     .boardContent("글" + i)
                     .build();
-            boardRepository.save(board);
+            boardRepository.save(boardVo);
         }
 
         BoardSearchDto search = new BoardSearchDto();
@@ -133,31 +133,31 @@ public class BoardRepositoryTest {
         search.setPagination(pagination);
 
         // when
-        List<Board> findBoardList = boardRepository.findAll(search);
+        List<BoardVo> findBoardListVo = boardRepository.findAll(search);
 
         // then
-        Assertions.assertThat(findBoardList.size()).isEqualTo(10);
+        Assertions.assertThat(findBoardListVo.size()).isEqualTo(10);
     }
 
     @Test
     @DisplayName("SearchType = title 로 검색하여 조회하기 테스트")
     public void findAll_SearchType_title() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
         for(int i = 0; i < 20; i++) {
-            Board board = Board.builder()
+            BoardVo boardVo = BoardVo.builder()
                     .boardWriter("한국")
-                    .memberId(member.getMemberId())
+                    .memberId(memberVo.getMemberId())
                     .boardTitle("제목" + i)
                     .boardContent("글" + i)
                     .build();
-            boardRepository.save(board);
+            boardRepository.save(boardVo);
         }
 
         BoardSearchDto search = new BoardSearchDto();
@@ -168,31 +168,31 @@ public class BoardRepositoryTest {
         search.setPagination(pagination);
 
         // when
-        List<Board> findBoardList = boardRepository.findAll(search);
+        List<BoardVo> findBoardListVo = boardRepository.findAll(search);
 
         // then
-        Assertions.assertThat(findBoardList.size()).isEqualTo(10);
+        Assertions.assertThat(findBoardListVo.size()).isEqualTo(10);
     }
 
     @Test
     @DisplayName("SearchType = writer 로 검색하여 조회하기 테스트")
     public void findAll_SearchType_writer() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
         for(int i = 0; i < 20; i++) {
-            Board board = Board.builder()
+            BoardVo boardVo = BoardVo.builder()
                     .boardWriter("한국")
-                    .memberId(member.getMemberId())
+                    .memberId(memberVo.getMemberId())
                     .boardTitle("제목" + i)
                     .boardContent("글" + i)
                     .build();
-            boardRepository.save(board);
+            boardRepository.save(boardVo);
         }
 
         BoardSearchDto search = new BoardSearchDto();
@@ -203,30 +203,30 @@ public class BoardRepositoryTest {
         search.setPagination(pagination);
 
         // when
-        List<Board> findBoardList = boardRepository.findAll(search);
+        List<BoardVo> findBoardListVo = boardRepository.findAll(search);
 
         // then
-        Assertions.assertThat(findBoardList.size()).isEqualTo(10);
+        Assertions.assertThat(findBoardListVo.size()).isEqualTo(10);
     }
 
     @Test
     public void getPageMaxCount() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
         for(int i = 0; i < 20; i++) {
-            Board board = Board.builder()
+            BoardVo boardVo = BoardVo.builder()
                     .boardWriter("한국")
-                    .memberId(member.getMemberId())
+                    .memberId(memberVo.getMemberId())
                     .boardTitle("제목" + i)
                     .boardContent("글" + i)
                     .build();
-            boardRepository.save(board);
+            boardRepository.save(boardVo);
         }
 
         BoardSearchDto search = new BoardSearchDto();
@@ -243,131 +243,131 @@ public class BoardRepositoryTest {
     @Test
     void deleteSetupByBoardIdAndMemberId() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
         // when
-        boardRepository.deleteSetupByBoardIdAndMemberId(board.getBoardId(), member.getMemberId());
+        boardRepository.deleteSetupByBoardIdAndMemberId(boardVo.getBoardId(), memberVo.getMemberId());
 
         // then
-        Optional<Board> findBoard = boardRepository.findById(board.getBoardId());
+        Optional<BoardVo> findBoard = boardRepository.findById(boardVo.getBoardId());
 
-        Board deleteBoard = findBoard.orElse(null);
-        assert deleteBoard != null;
-        Assertions.assertThat(deleteBoard.getBoardDeleteDate()).isNotNull();
+        BoardVo deleteBoardVo = findBoard.orElse(null);
+        assert deleteBoardVo != null;
+        Assertions.assertThat(deleteBoardVo.getBoardDeleteDate()).isNotNull();
     }
 
     @Test
     void updateByBoard() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        Board updateBoard = Board.builder()
-                .boardId(board.getBoardId())
+        BoardVo updateBoardVo = BoardVo.builder()
+                .boardId(boardVo.getBoardId())
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목 변경")
                 .boardContent("글 변경")
                 .build();
 
         // when
-        boardRepository.updateByBoard(updateBoard);
+        boardRepository.updateByBoard(updateBoardVo);
 
         // then
-        Optional<Board> findBoard = boardRepository.findById(board.getBoardId());
-        Board updatedBoard = findBoard.orElse(null);
-        assert updatedBoard != null;
-        Assertions.assertThat(updatedBoard.getBoardTitle()).isEqualTo("제목 변경");
-        Assertions.assertThat(updatedBoard.getBoardContent()).isEqualTo("글 변경");
-        Assertions.assertThat(updatedBoard.getBoardUpdateDate()).isNotNull();
+        Optional<BoardVo> findBoard = boardRepository.findById(boardVo.getBoardId());
+        BoardVo updatedBoardVo = findBoard.orElse(null);
+        assert updatedBoardVo != null;
+        Assertions.assertThat(updatedBoardVo.getBoardTitle()).isEqualTo("제목 변경");
+        Assertions.assertThat(updatedBoardVo.getBoardContent()).isEqualTo("글 변경");
+        Assertions.assertThat(updatedBoardVo.getBoardUpdateDate()).isNotNull();
     }
 
     @Test
     public void findBoardFileReplyById() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
-                .boardWriter(member.getMemberNm())
-                .memberId(member.getMemberId())
+        BoardVo boardVo = BoardVo.builder()
+                .boardWriter(memberVo.getMemberNm())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        List<File> files = new ArrayList<>();
+        List<FileVo> fileVos = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            files.add(File.builder()
-                    .boardId(board.getBoardId())
+            fileVos.add(FileVo.builder()
+                    .boardId(boardVo.getBoardId())
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(true)
                     .build());
         }
-        fileRepository.saveAll(files);
+        fileRepository.saveAll(fileVos);
 
         // when
-        Optional<BoardFile> findBoardFile = boardRepository.findBoardFileById(board.getBoardId());
+        Optional<BoardFileVo> findBoardFile = boardRepository.findBoardFileById(boardVo.getBoardId());
 
         // then
-        BoardFile boardFile = findBoardFile.orElse(null);
-        assert boardFile != null;
-        Assertions.assertThat(boardFile.getFileList().size()).isEqualTo(5);
+        BoardFileVo boardFileVo = findBoardFile.orElse(null);
+        assert boardFileVo != null;
+        Assertions.assertThat(boardFileVo.getFileVoList().size()).isEqualTo(5);
     }
 
     void findDeleteSetup() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
-                .boardWriter(member.getMemberNm())
-                .memberId(member.getMemberId())
+        BoardVo boardVo = BoardVo.builder()
+                .boardWriter(memberVo.getMemberNm())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .boardDeleteDate(LocalDateTime.now())
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
         // when
-        List<Board> deleteSetup = boardRepository.findDeleteSetup();
+        List<BoardVo> deleteSetup = boardRepository.findDeleteSetup();
 
         // then
         Assertions.assertThat(deleteSetup.size()).isEqualTo(1);
@@ -376,85 +376,85 @@ public class BoardRepositoryTest {
     @Test
     void remove() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
-                .boardWriter(member.getMemberNm())
-                .memberId(member.getMemberId())
+        BoardVo boardVo = BoardVo.builder()
+                .boardWriter(memberVo.getMemberNm())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
         // when
-        boardRepository.remove(board.getBoardId());
+        boardRepository.remove(boardVo.getBoardId());
 
         // then
-        Optional<Board> findBoard = boardRepository.findById(board.getBoardId());
+        Optional<BoardVo> findBoard = boardRepository.findById(boardVo.getBoardId());
         Assertions.assertThat(findBoard.orElse(null)).isNull();
     }
 
     @Test
     void findDeleteSetupByMemberId() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
-                .boardWriter(member.getMemberNm())
-                .memberId(member.getMemberId())
+        BoardVo boardVo = BoardVo.builder()
+                .boardWriter(memberVo.getMemberNm())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
-        boardRepository.deleteSetupByBoardIdAndMemberId(board.getBoardId(), member.getMemberId());
+        boardRepository.save(boardVo);
+        boardRepository.deleteSetupByBoardIdAndMemberId(boardVo.getBoardId(), memberVo.getMemberId());
         // when
-        List<Board> findBoard = boardRepository.findDeleteSetupByMemberId(member.getMemberId());
+        List<BoardVo> findBoardVo = boardRepository.findDeleteSetupByMemberId(memberVo.getMemberId());
 
         // then
-        Assertions.assertThat(findBoard.size()).isEqualTo(1);
+        Assertions.assertThat(findBoardVo.size()).isEqualTo(1);
     }
 
     @Test
     void updateRecoverByBoardIdAndMemberId() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
-                .boardWriter(member.getMemberNm())
-                .memberId(member.getMemberId())
+        BoardVo boardVo = BoardVo.builder()
+                .boardWriter(memberVo.getMemberNm())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
-        boardRepository.deleteSetupByBoardIdAndMemberId(board.getBoardId(), member.getMemberId());
+        boardRepository.save(boardVo);
+        boardRepository.deleteSetupByBoardIdAndMemberId(boardVo.getBoardId(), memberVo.getMemberId());
 
         // when
-        int result = boardRepository.updateRecoverByBoardIdAndMemberId(board.getBoardId(), member.getMemberId());
+        int result = boardRepository.updateRecoverByBoardIdAndMemberId(boardVo.getBoardId(), memberVo.getMemberId());
 
         // then
-        List<Board> findBoard = boardRepository.findDeleteSetupByMemberId(member.getMemberId());
-        Assertions.assertThat(findBoard.size()).isEqualTo(0);
+        List<BoardVo> findBoardVo = boardRepository.findDeleteSetupByMemberId(memberVo.getMemberId());
+        Assertions.assertThat(findBoardVo.size()).isEqualTo(0);
         Assertions.assertThat(result).isEqualTo(1);
     }
 }

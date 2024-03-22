@@ -1,8 +1,8 @@
 package hello.board.myboard.repository;
 
-import hello.board.myboard.domain.Board;
-import hello.board.myboard.domain.File;
-import hello.board.myboard.domain.Member;
+import hello.board.myboard.vo.BoardVo;
+import hello.board.myboard.vo.FileVo;
+import hello.board.myboard.vo.MemberVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,62 +26,62 @@ public class FileRepositoryTest {
     @Test
     void save() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        File file = File.builder()
-                .boardId(board.getBoardId())
+        FileVo fileVo = FileVo.builder()
+                .boardId(boardVo.getBoardId())
                 .uploadFileName("hihi")
                 .storeFileName("hehe")
                 .fileImageYn(true)
                 .build();
 
         // when
-        fileRepository.save(file);
+        fileRepository.save(fileVo);
 
         // then
-        Optional<File> findFile = fileRepository.findById(file.getFileId());
-        assertThat(findFile.orElseThrow(RuntimeException::new)).isInstanceOf(File.class);
+        Optional<FileVo> findFile = fileRepository.findById(fileVo.getFileId());
+        assertThat(findFile.orElseThrow(RuntimeException::new)).isInstanceOf(FileVo.class);
     }
 
     @Test
     void saveAll() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        List<File> files = new ArrayList<>();
+        List<FileVo> fileVos = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            files.add(File.builder()
-                    .boardId(board.getBoardId())
+            fileVos.add(FileVo.builder()
+                    .boardId(boardVo.getBoardId())
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(true)
@@ -89,46 +89,46 @@ public class FileRepositoryTest {
         }
 
         // when
-        fileRepository.saveAll(files);
+        fileRepository.saveAll(fileVos);
 
         // then
-        Optional<File> findFile = fileRepository.findById(files.get(0).getFileId());
-        assertThat(findFile.orElseThrow(RuntimeException::new)).isInstanceOf(File.class);
+        Optional<FileVo> findFile = fileRepository.findById(fileVos.get(0).getFileId());
+        assertThat(findFile.orElseThrow(RuntimeException::new)).isInstanceOf(FileVo.class);
     }
 
     @Test
     void findByBoardId() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        List<File> files = new ArrayList<>();
+        List<FileVo> fileVos = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            files.add(File.builder()
-                    .boardId(board.getBoardId())
+            fileVos.add(FileVo.builder()
+                    .boardId(boardVo.getBoardId())
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(true)
                     .build());
         }
-        fileRepository.saveAll(files);
+        fileRepository.saveAll(fileVos);
 
         // when
-        List<File> findBoards = fileRepository.findByBoardId(board.getBoardId());
+        List<FileVo> findBoards = fileRepository.findByBoardId(boardVo.getBoardId());
 
         // then
         assertThat(findBoards.size()).isEqualTo(5);
@@ -137,29 +137,29 @@ public class FileRepositoryTest {
     @Test
     void findByBoardIdAndFileImageYn() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        List<File> files = new ArrayList<>();
+        List<FileVo> fileVos = new ArrayList<>();
 
         // 이미지 파일 5개 INSERT
         for (int i = 0; i < 5; i++) {
-            files.add(File.builder()
-                    .boardId(board.getBoardId())
+            fileVos.add(FileVo.builder()
+                    .boardId(boardVo.getBoardId())
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(true)
@@ -168,131 +168,131 @@ public class FileRepositoryTest {
 
         // 첨부 파일 3개 INSERT
         for (int i = 0; i < 3; i++) {
-            files.add(File.builder()
-                    .boardId(board.getBoardId())
+            fileVos.add(FileVo.builder()
+                    .boardId(boardVo.getBoardId())
                     .uploadFileName("hihi" + i)
                     .storeFileName("hehe" + i)
                     .fileImageYn(false)
                     .build());
         }
-        fileRepository.saveAll(files);
+        fileRepository.saveAll(fileVos);
 
         // when 이미지 파일 가져오기
-        List<File> findFile = fileRepository.findByBoardIdAndFileImageYn(board.getBoardId(), true);
+        List<FileVo> findFileVo = fileRepository.findByBoardIdAndFileImageYn(boardVo.getBoardId(), true);
 
         // then
-        assertThat(findFile.size()).isEqualTo(5); // 기대값 : 5개
+        assertThat(findFileVo.size()).isEqualTo(5); // 기대값 : 5개
     }
 
     @Test
     void findByStoreFileName() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        File saveFile = File.builder()
-                .boardId(board.getBoardId())
+        FileVo saveFileVo = FileVo.builder()
+                .boardId(boardVo.getBoardId())
                 .uploadFileName("hihi")
                 .storeFileName("hehe")
                 .fileImageYn(true)
                 .build();
         
-        fileRepository.save(saveFile);
+        fileRepository.save(saveFileVo);
 
         // when
-        Optional<File> fileOptional = fileRepository.findByStoreFileName(saveFile.getStoreFileName());
-        File file = fileOptional.orElse(null);
+        Optional<FileVo> fileOptional = fileRepository.findByStoreFileName(saveFileVo.getStoreFileName());
+        FileVo fileVo = fileOptional.orElse(null);
 
         // then
-        assertThat(file).isNotNull();
-        assertThat(saveFile.getUploadFileName()).isEqualTo(file.getUploadFileName());
+        assertThat(fileVo).isNotNull();
+        assertThat(saveFileVo.getUploadFileName()).isEqualTo(fileVo.getUploadFileName());
     }
 
     @Test
     void deleteById() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        File saveFile = File.builder()
-                .boardId(board.getBoardId())
+        FileVo saveFileVo = FileVo.builder()
+                .boardId(boardVo.getBoardId())
                 .uploadFileName("hihi")
                 .storeFileName("hehe")
                 .fileImageYn(true)
                 .build();
 
-        fileRepository.save(saveFile);
+        fileRepository.save(saveFileVo);
 
         // when
-        fileRepository.deleteById(saveFile.getFileId());
+        fileRepository.deleteById(saveFileVo.getFileId());
 
         // then
-        Optional<File> findFile = fileRepository.findById(saveFile.getFileId());
+        Optional<FileVo> findFile = fileRepository.findById(saveFileVo.getFileId());
         assertThat(findFile.isEmpty()).isTrue();
     }
 
     @Test
     void deleteByStoreFileName() {
         // given
-        Member member = Member.builder()
+        MemberVo memberVo = MemberVo.builder()
                 .memberEmail("hello1@naver.com")
                 .memberNm("한국")
                 .memberPwd("123456")
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(memberVo);
 
-        Board board = Board.builder()
+        BoardVo boardVo = BoardVo.builder()
                 .boardWriter("한국")
-                .memberId(member.getMemberId())
+                .memberId(memberVo.getMemberId())
                 .boardTitle("제목")
                 .boardContent("글")
                 .build();
 
-        boardRepository.save(board);
+        boardRepository.save(boardVo);
 
-        File saveFile = File.builder()
-                .boardId(board.getBoardId())
+        FileVo saveFileVo = FileVo.builder()
+                .boardId(boardVo.getBoardId())
                 .uploadFileName("hihi")
                 .storeFileName("hehe")
                 .fileImageYn(true)
                 .build();
 
-        fileRepository.save(saveFile);
+        fileRepository.save(saveFileVo);
 
         // when
         fileRepository.deleteByStoreFileName("hehe");
 
         // then
-        Optional<File> findFile = fileRepository.findById(saveFile.getFileId());
+        Optional<FileVo> findFile = fileRepository.findById(saveFileVo.getFileId());
         assertThat(findFile.isEmpty()).isTrue();
     }
 }

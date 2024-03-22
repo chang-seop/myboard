@@ -1,14 +1,15 @@
 package hello.board.myboard.controller;
 
 import hello.board.myboard.common.exception.BadRequestException;
-import hello.board.myboard.model.FileStore;
-import hello.board.myboard.model.PagingResponseDto;
-import hello.board.myboard.model.board.*;
-import hello.board.myboard.model.member.MemberDetailsDto;
-import hello.board.myboard.model.reply.ReplyDto;
-import hello.board.myboard.model.reply.ReplyDeleteDto;
-import hello.board.myboard.model.reply.ReplySaveDto;
-import hello.board.myboard.model.reply.ReplySearchDto;
+import hello.board.myboard.common.file.FileStore;
+import hello.board.myboard.dto.PagingResponseDto;
+import hello.board.myboard.dto.board.*;
+import hello.board.myboard.dto.board.code.SearchType;
+import hello.board.myboard.dto.member.MemberDetailsDto;
+import hello.board.myboard.dto.reply.ReplyDto;
+import hello.board.myboard.dto.reply.ReplyDeleteDto;
+import hello.board.myboard.dto.reply.ReplySaveDto;
+import hello.board.myboard.dto.reply.ReplySearchDto;
 import hello.board.myboard.service.BoardService;
 import hello.board.myboard.service.ReplyService;
 import lombok.RequiredArgsConstructor;
@@ -68,8 +69,8 @@ public class BoardController {
 
         model.addAttribute("replySaveDto", new ReplySaveDto());
         model.addAttribute("replyModifyDto", new ReplyDeleteDto());
-        model.addAttribute("authMemberId", memberDetailsDto.getMember().getMemberId()); // 파일 삭제 하기 위한 model 속성
-        model.addAttribute("authMemberNm", memberDetailsDto.getMember().getMemberNm());
+        model.addAttribute("authMemberId", memberDetailsDto.getMemberVo().getMemberId()); // 파일 삭제 하기 위한 model 속성
+        model.addAttribute("authMemberNm", memberDetailsDto.getMemberVo().getMemberNm());
         model.addAttribute("boardDto", boardDto);
         model.addAttribute("pagingResponseDto", pagingResponseDto);
 
@@ -113,7 +114,7 @@ public class BoardController {
             return "boardWrite";
         }
 
-        boardService.createBoard(boardSaveDto, memberDetailsDto.getMember());
+        boardService.createBoard(boardSaveDto, memberDetailsDto.getMemberVo());
 
         return "redirect:/board";
     }
@@ -131,7 +132,7 @@ public class BoardController {
         BoardDto boardAndFiles = boardService.findBoardAndFiles(boardId);
 
         // 게시글 글쓴이가 아닐 경우 Exception
-        if(!boardAndFiles.getMemberId().equals(memberDetailsDto.getMember().getMemberId())) {
+        if(!boardAndFiles.getMemberId().equals(memberDetailsDto.getMemberVo().getMemberId())) {
             throw new BadRequestException("수정할 수 없는 권한입니다.");
         }
 
@@ -163,7 +164,7 @@ public class BoardController {
             return "boardModify";
         }
 
-        boardService.updateBoard(boardModifyDto, memberDetailsDto.getMember());
+        boardService.updateBoard(boardModifyDto, memberDetailsDto.getMemberVo());
 
         return "redirect:/board";
     }
@@ -183,7 +184,7 @@ public class BoardController {
     @PostMapping("/remove")
     public String boardRemove(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
                               @ModelAttribute BoardDeleteDto boardDeleteDto) {
-        boardService.deleteSetupBoard(boardDeleteDto.getBoardId(), memberDetailsDto.getMember());
+        boardService.deleteSetupBoard(boardDeleteDto.getBoardId(), memberDetailsDto.getMemberVo());
 
         return "redirect:/board";
     }
@@ -194,7 +195,7 @@ public class BoardController {
     @GetMapping("/recoverView")
     public String boardRecoverForm(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
                                    Model model) {
-        List<BoardDto> boardDtoList = boardService.findDeleteSetupBoard(memberDetailsDto.getMember().getMemberId());
+        List<BoardDto> boardDtoList = boardService.findDeleteSetupBoard(memberDetailsDto.getMemberVo().getMemberId());
         model.addAttribute("boardDtoList", boardDtoList);
         return "boardRecover";
     }
@@ -206,7 +207,7 @@ public class BoardController {
     public String boardRecover(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
                                @RequestParam("boardId") Long boardId) {
 
-        boardService.updateRecoverBoard(memberDetailsDto.getMember().getMemberId(), boardId);
+        boardService.updateRecoverBoard(memberDetailsDto.getMemberVo().getMemberId(), boardId);
 
         return "redirect:/board";
     }

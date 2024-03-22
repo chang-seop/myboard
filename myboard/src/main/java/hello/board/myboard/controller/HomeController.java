@@ -1,6 +1,6 @@
 package hello.board.myboard.controller;
 
-import hello.board.myboard.model.member.MemberDetailsDto;
+import hello.board.myboard.dto.member.MemberDetailsDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,7 +16,7 @@ public class HomeController {
 
         if(memberDetailsDto != null) {
             // 로그인 시 회원 닉네임 Model 에 등록
-            model.addAttribute("memberName", memberDetailsDto.getMember().getMemberNm() + "님 환영합니다.");
+            model.addAttribute("memberName", memberDetailsDto.getMemberVo().getMemberNm() + "님 환영합니다.");
         }
 
         return "home";

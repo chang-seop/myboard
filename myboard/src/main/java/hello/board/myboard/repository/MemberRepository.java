@@ -1,14 +1,14 @@
 package hello.board.myboard.repository;
 
-import hello.board.myboard.domain.Authority;
-import hello.board.myboard.domain.Member;
+import hello.board.myboard.vo.AuthorityVo;
+import hello.board.myboard.vo.MemberVo;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository {
-    Member save(Member user);
-    void insertAuthority(List<Authority> authorities);
-    Optional<Member> findByEmail(String email);
-    Optional<Member> findByName(String name);
+    MemberVo save(MemberVo user);
+    void insertAuthority(List<AuthorityVo> authorities);
+    Optional<MemberVo> findByEmail(String email);
+    Optional<MemberVo> findByName(String name);
 }

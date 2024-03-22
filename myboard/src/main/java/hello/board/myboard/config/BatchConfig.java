@@ -1,8 +1,8 @@
 package hello.board.myboard.config;
 
-import hello.board.myboard.domain.Board;
-import hello.board.myboard.domain.File;
-import hello.board.myboard.model.FileStore;
+import hello.board.myboard.vo.BoardVo;
+import hello.board.myboard.vo.FileVo;
+import hello.board.myboard.common.file.FileStore;
 import hello.board.myboard.repository.BoardRepository;
 import hello.board.myboard.repository.FileRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -46,17 +46,17 @@ public class BatchConfig {
         return stepBuilderFactory.get("step")
                 .tasklet(((contribution, chunkContext) -> {
                     log.info("============ boardJob ===========");
-                    List<Board> boardList = boardRepository.findDeleteSetup();
-                    boardList.forEach((board) -> {
+                    List<BoardVo> boardVoList = boardRepository.findDeleteSetup();
+                    boardVoList.forEach((board) -> {
                         // 게시글 삭제 시간 + 7일 (삭제 취소 유효 기간)
                         LocalDateTime deleteTime = board.getBoardDeleteDate().plusDays(7);
 
                         // deleteTime 보다 현재시간이 과거이면 게시글 삭제 (isBefore : 인자보다 과거일 때 true 리턴)
                         if(deleteTime.isBefore(LocalDateTime.now())) {
                             // 게시글에 관련된 파일 삭제 (스토리지 파일) (댓글과 파일 DB 는 CASCADE 로 연관 삭제가 된다.)
-                            List<File> findFile = fileRepository.findByBoardId(board.getBoardId());
+                            List<FileVo> findFileVo = fileRepository.findByBoardId(board.getBoardId());
 
-                            boolean isRemove = fileStore.removeFiles(findFile);
+                            boolean isRemove = fileStore.removeFiles(findFileVo);
                             if(!isRemove) {
                                 log.error("파일 삭제 실패");
                             }

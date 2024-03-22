@@ -1,7 +1,7 @@
 package hello.board.myboard.controller;
 
-import hello.board.myboard.domain.File;
-import hello.board.myboard.model.FileStore;
+import hello.board.myboard.vo.FileVo;
+import hello.board.myboard.common.file.FileStore;
 import hello.board.myboard.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +37,10 @@ public class FileController {
     @GetMapping("/images/{filename}")
     public Resource downloadImage(@PathVariable String filename, HttpServletResponse response) throws IOException {
         // DB 에 존재하는지 파일 찾기
-        Optional<File> fileOptional = fileRepository.findByStoreFileName(filename);
-        File file = fileOptional.orElse(null);
+        Optional<FileVo> fileOptional = fileRepository.findByStoreFileName(filename);
+        FileVo fileVo = fileOptional.orElse(null);
 
-        if(file != null) {
+        if(fileVo != null) {
             // DB 에 파일이 존재할 경우
             // 경로에 있는 파일에 접근을 해서 파일을 스트림으로 반환하게 된다.
             return new UrlResource("file:" + fileStore.getFullPath(filename));
@@ -56,11 +56,11 @@ public class FileController {
      */
     @GetMapping("/attach/{fileId}")
     public ResponseEntity<Resource> downloadAttach(@PathVariable Long fileId) throws MalformedURLException {
-        Optional<File> fileOptional = fileRepository.findById(fileId);
-        File file = fileOptional.orElse(null);
-        if(file != null) {
-            String storeFileName = file.getStoreFileName();
-            String uploadFileName = file.getUploadFileName();
+        Optional<FileVo> fileOptional = fileRepository.findById(fileId);
+        FileVo fileVo = fileOptional.orElse(null);
+        if(fileVo != null) {
+            String storeFileName = fileVo.getStoreFileName();
+            String uploadFileName = fileVo.getUploadFileName();
 
             // 사용자가 실제 다운로드 받을 때 업로드 한 파일명이 나와야 한다.
             UrlResource urlResource = new UrlResource("file:" + fileStore.getFullPath(storeFileName));

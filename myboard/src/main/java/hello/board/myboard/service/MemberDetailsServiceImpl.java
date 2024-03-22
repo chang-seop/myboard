@@ -1,6 +1,6 @@
 package hello.board.myboard.service;
 
-import hello.board.myboard.model.member.MemberDetailsDto;
+import hello.board.myboard.dto.member.MemberDetailsDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;

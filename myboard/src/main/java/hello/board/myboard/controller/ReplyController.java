@@ -1,8 +1,8 @@
 package hello.board.myboard.controller;
 
-import hello.board.myboard.model.member.MemberDetailsDto;
-import hello.board.myboard.model.reply.ReplyDeleteDto;
-import hello.board.myboard.model.reply.ReplySaveDto;
+import hello.board.myboard.dto.member.MemberDetailsDto;
+import hello.board.myboard.dto.reply.ReplyDeleteDto;
+import hello.board.myboard.dto.reply.ReplySaveDto;
 import hello.board.myboard.service.BoardService;
 import hello.board.myboard.service.ReplyService;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class ReplyController {
             return "redirect:/board/{boardId}?replySaveFailure=true";
         }
 
-        replyService.saveReply(replySaveDto, boardId, memberDetailsDto.getMember());
+        replyService.saveReply(replySaveDto, boardId, memberDetailsDto.getMemberVo());
         return "redirect:/board/{boardId}";
     }
 
@@ -50,7 +50,7 @@ public class ReplyController {
                               @ModelAttribute ReplyDeleteDto replyDeleteDto,
                               RedirectAttributes redirectAttributes) {
 
-        replyService.deleteReply(replyDeleteDto.getReplyId(), replyDeleteDto.getBoardId(), memberDetailsDto.getMember());
+        replyService.deleteReply(replyDeleteDto.getReplyId(), replyDeleteDto.getBoardId(), memberDetailsDto.getMemberVo());
 
         redirectAttributes.addAttribute("boardId", replyDeleteDto.getBoardId());
         return "redirect:/board/{boardId}";

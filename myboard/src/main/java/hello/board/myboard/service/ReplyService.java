@@ -1,13 +1,13 @@
 package hello.board.myboard.service;
 
 import hello.board.myboard.common.exception.BadRequestException;
-import hello.board.myboard.domain.Member;
-import hello.board.myboard.domain.Reply;
-import hello.board.myboard.model.Pagination;
-import hello.board.myboard.model.PagingResponseDto;
-import hello.board.myboard.model.reply.ReplyDto;
-import hello.board.myboard.model.reply.ReplySaveDto;
-import hello.board.myboard.model.reply.ReplySearchDto;
+import hello.board.myboard.vo.MemberVo;
+import hello.board.myboard.vo.ReplyVo;
+import hello.board.myboard.dto.Pagination;
+import hello.board.myboard.dto.PagingResponseDto;
+import hello.board.myboard.dto.reply.ReplyDto;
+import hello.board.myboard.dto.reply.ReplySaveDto;
+import hello.board.myboard.dto.reply.ReplySearchDto;
 import hello.board.myboard.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,15 +29,15 @@ public class ReplyService {
      * 댓글 저장
      */
     @Transactional
-    public void saveReply(ReplySaveDto replySaveDto, Long boardId, Member member) {
-        Reply reply = Reply.builder()
+    public void saveReply(ReplySaveDto replySaveDto, Long boardId, MemberVo memberVo) {
+        ReplyVo replyVo = ReplyVo.builder()
                 .boardId(boardId)
-                .memberId(member.getMemberId())
-                .replyWriter(member.getMemberNm())
+                .memberId(memberVo.getMemberId())
+                .replyWriter(memberVo.getMemberNm())
                 .replyContent(replySaveDto.getReplyContent())
                 .build();
 
-        replyRepository.save(reply);
+        replyRepository.save(replyVo);
     }
 
     /**
@@ -57,10 +57,10 @@ public class ReplyService {
         replySearchDto.setPagination(pagination);
 
         // 계산된 페이지 정보의 일부(limitStart, recordSize)를 기준으로 리스트 데이터 조회 후 응답 데이터 반환
-        List<Reply> findReplyList = replyRepository.findPageByBoardId(replySearchDto, boardId);
+        List<ReplyVo> findReplyListVo = replyRepository.findPageByBoardId(replySearchDto, boardId);
 
         List<ReplyDto> replyDtoList = new ArrayList<>();
-        findReplyList.forEach(reply -> replyDtoList.add(ReplyDto.builder()
+        findReplyListVo.forEach(reply -> replyDtoList.add(ReplyDto.builder()
                         .replyId(reply.getReplyId())
                         .boardId(reply.getBoardId())
                         .memberId(reply.getMemberId())
@@ -77,14 +77,14 @@ public class ReplyService {
      * 댓글이 존재하지 않음, 사용자의 댓글이 아님 언체크 예외 throw
      */
     @Transactional
-    public void deleteReply(Long replyId, Long boardId, Member member) {
-        Optional<Reply> findReply = replyRepository.findById(replyId);
+    public void deleteReply(Long replyId, Long boardId, MemberVo memberVo) {
+        Optional<ReplyVo> findReply = replyRepository.findById(replyId);
 
         // 댓글이 존재하는지 확인
-        Reply reply = findReply.orElseThrow(() -> new BadRequestException("댓글이 존재하지 않습니다."));
+        ReplyVo replyVo = findReply.orElseThrow(() -> new BadRequestException("댓글이 존재하지 않습니다."));
 
         // 사용자의 댓글인지 확인 db 에 조회한 reply.getMemberId 가 세션으로 얻은 memberId 값이 같은지 확인
-        if(!reply.getMemberId().equals(member.getMemberId())) {
+        if(!replyVo.getMemberId().equals(memberVo.getMemberId())) {
             throw new BadRequestException("사용자의 댓글이 아닙니다.");
         }
 
