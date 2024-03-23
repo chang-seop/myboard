@@ -10,8 +10,14 @@ import hello.board.myboard.dto.reply.ReplyDto;
 import hello.board.myboard.dto.reply.ReplyDeleteDto;
 import hello.board.myboard.dto.reply.ReplySaveDto;
 import hello.board.myboard.dto.reply.ReplySearchDto;
+import hello.board.myboard.repository.BoardRepository;
+import hello.board.myboard.repository.LikesRepository;
+import hello.board.myboard.repository.ReplyRepository;
 import hello.board.myboard.service.BoardService;
+import hello.board.myboard.service.LikesService;
 import hello.board.myboard.service.ReplyService;
+import hello.board.myboard.vo.LikesVo;
+import hello.board.myboard.vo.MemberVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +31,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -34,6 +41,7 @@ public class BoardController {
     private final BoardService boardService;
     private final ReplyService replyService;
     private final FileStore fileStore;
+    private final LikesService likesService;
     @Value("${file.maxSize}")
     private Integer fileMaxSize;
 
@@ -44,9 +52,9 @@ public class BoardController {
     public String boardForm(@ModelAttribute("params") final BoardSearchDto params,
                             Model model) {
         PagingResponseDto<BoardDto> response = boardService.findAllBoard(params);
-        model.addAttribute("response", response);
         List<SearchType> searchTypeList = new ArrayList<>(Arrays.asList(SearchType.writer, SearchType.content));
 
+        model.addAttribute("response", response);
         model.addAttribute("searchTypeList", searchTypeList);
         return "board";
     }
@@ -63,14 +71,17 @@ public class BoardController {
         if(replySaveFailure) {
             model.addAttribute("replySaveFailure", "댓글이 너무 길거나 짧습니다. (1자 이상 500자 이내)");
         }
+        MemberVo memberVo = memberDetailsDto.getMemberVo();
 
         BoardDto boardDto = boardService.findBoardAndFiles(boardId);
         PagingResponseDto<ReplyDto> pagingResponseDto = replyService.findPageReply(params, boardId);
+        int myLikeCount = likesService.getLikeBoard(memberVo.getMemberId(), boardId);
 
+        model.addAttribute("myLikeCount", myLikeCount);
         model.addAttribute("replySaveDto", new ReplySaveDto());
         model.addAttribute("replyModifyDto", new ReplyDeleteDto());
-        model.addAttribute("authMemberId", memberDetailsDto.getMemberVo().getMemberId()); // 파일 삭제 하기 위한 model 속성
-        model.addAttribute("authMemberNm", memberDetailsDto.getMemberVo().getMemberNm());
+        model.addAttribute("authMemberId", memberVo.getMemberId()); // 파일 삭제 하기 위한 model 속성
+        model.addAttribute("authMemberNm", memberVo.getMemberNm());
         model.addAttribute("boardDto", boardDto);
         model.addAttribute("pagingResponseDto", pagingResponseDto);
 

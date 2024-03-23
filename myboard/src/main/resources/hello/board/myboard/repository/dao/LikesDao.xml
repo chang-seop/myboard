@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hello.board.myboard.repository.dao.LikesDao">
+    <sql id="likesColumns">
+        likes_id, member_id, board_id, reply_id, likes_regdate
+    </sql>
+
+    <insert id="saveBoardLike" useGeneratedKeys="true" keyProperty="likesId" parameterType="LikesVo">
+        insert into
+        likes
+            (member_id, board_id, likes_regdate)
+        values
+            (#{memberId}, #{boardId}, now())
+    </insert>
+
+    <insert id="saveReplyLike" useGeneratedKeys="true" keyProperty="likesId" parameterType="LikesVo">
+        insert into
+        likes
+            (member_id, reply_id, likes_regdate)
+        values
+            (#{memberId}, #{replyId}, now())
+    </insert>
+
+    <delete id="deleteByMemberIdAndBoardId" parameterType="Map">
+        delete
+        from
+            likes
+        where
+            likes.member_id = #{memberId} and likes.board_id = #{boardId}
+    </delete>
+
+    <delete id="deleteByMemberIdAndReplyId" parameterType="Map">
+        delete
+        from
+            likes
+        where
+            likes.member_id = #{memberId} and likes.reply_id = #{replyId}
+    </delete>
+
+    <select id="findByMemberIdAndBoardId" parameterType="Map" resultType="LikesVo">
+        select
+            <include refid="likesColumns"/>
+        from
+            likes
+        where
+            likes.member_id = #{memberId} and likes.board_id = #{boardId}
+    </select>
+
+    <select id="findByMemberIdAndReplyId" parameterType="Map" resultType="LikesVo">
+        select
+            <include refid="likesColumns"/>
+        from
+            likes
+        where
+            likes.member_id = #{memberId} and likes.reply_id = #{replyId}
+    </select>
+
+    <select id="findCountByBoardId" parameterType="Long" resultType="Integer">
+        select
+            count(likes.likes_id)
+        from
+            likes
+        where
+            likes.board_id = #{boardId}
+    </select>
+
+    <select id="findCountByReplyId" parameterType="Long" resultType="Integer">
+        select
+            count(likes.likes_id)
+        from
+            likes
+        where
+            likes.reply_id = #{replyId}
+    </select>
+
+    <resultMap id="likesBoardCountDtoMap" type="LikesBoardCountDto">
+        <id property="boardId" column="board_id"/>
+        <result property="likeCount" column="like_count"/>
+    </resultMap>
+
+    <!-- 일(Board)대다(Likes) 페이징 쿼리에서 필요한 IN 쿼리  (N + 1 문제 해결) -->
+    <select id="findBoardLikeByBoardIdList" resultMap="likesBoardCountDtoMap">
+        select
+            b.board_id, count(l.likes_id) as like_count
+        from
+            board as b left outer join likes as l on (l.board_id = b.board_id)
+        where
+            b.board_id in
+                <foreach collection="boardIdList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+        group by
+            b.board_id
+    </select>
+</mapper>

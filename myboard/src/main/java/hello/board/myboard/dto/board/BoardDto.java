@@ -18,9 +18,10 @@ public class BoardDto {
     private LocalDateTime boardRegdate;
     private LocalDateTime boardUpdateDate;
     private LocalDateTime boardDeleteDate;
+    private Integer likeCount;
     private List<FileVo> fileList;
     @Builder
-    public BoardDto(Long boardId, Long memberId, String boardWriter, String boardTitle, String boardContent, LocalDateTime boardRegdate, LocalDateTime boardUpdateDate, LocalDateTime boardDeleteDate, List<FileVo> fileList) {
+    public BoardDto(Long boardId, Long memberId, String boardWriter, String boardTitle, String boardContent, LocalDateTime boardRegdate, LocalDateTime boardUpdateDate, LocalDateTime boardDeleteDate, Integer likeCount, List<FileVo> fileList) {
         this.boardId = boardId;
         this.memberId = memberId;
         this.boardWriter = boardWriter;
@@ -29,6 +30,7 @@ public class BoardDto {
         this.boardRegdate = boardRegdate;
         this.boardUpdateDate = boardUpdateDate;
         this.boardDeleteDate = boardDeleteDate;
+        this.likeCount = likeCount;
         this.fileList = fileList;
     }
 }

@@ -2,6 +2,8 @@ package hello.board.myboard.service;
 
 import hello.board.myboard.common.exception.BadRequestException;
 import hello.board.myboard.common.exception.CustomFileUploadException;
+import hello.board.myboard.dto.likes.LikesBoardCountDto;
+import hello.board.myboard.repository.LikesRepository;
 import hello.board.myboard.vo.BoardFileVo;
 import hello.board.myboard.vo.BoardVo;
 import hello.board.myboard.vo.FileVo;
@@ -19,6 +21,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final FileService fileService;
     private final FileStore fileStore;
+    private final LikesRepository likesRepository;
 
     /**
      * 게시글 저장
@@ -75,6 +79,7 @@ public class BoardService {
                     .boardTitle(boardFileVo.getBoardTitle())
                     .boardContent(boardFileVo.getBoardContent())
                     .boardRegdate(boardFileVo.getBoardRegdate())
+                    .likeCount(boardFileVo.getLikeCount())
                     .fileList(boardFileVo.getFileVoList())
                     .build();
         }
@@ -87,6 +92,7 @@ public class BoardService {
                 .boardTitle(boardFileVo.getBoardTitle())
                 .boardContent(boardFileVo.getBoardContent())
                 .boardRegdate(boardFileVo.getBoardRegdate())
+                .likeCount(boardFileVo.getLikeCount())
                 .build();
     }
 
@@ -115,7 +121,24 @@ public class BoardService {
                 .map(BoardVo::toDto)
                 .collect(Collectors.toList());
 
+        List<Long> boardIds = toBoardIdList(findAll);
+
+        Map<Long, Integer> longIntegerMap = likesRepository.findBoardLikeByBoardIdList(boardIds)
+                .stream()
+                .collect(Collectors.toMap(LikesBoardCountDto::getBoardId, LikesBoardCountDto::getLikeCount)); // key : boardId value : likeCount
+
+        boardDtoList.forEach(b -> b.setLikeCount(longIntegerMap.get(b.getBoardId()))); // 반복문 돌면서 likeCount 값 넣기
+
         return new PagingResponseDto<>(boardDtoList, pagination);
+    }
+
+    /**
+     * 반복문 돌면서 boardId 리스트 만들기
+     */
+    private List<Long> toBoardIdList(List<BoardVo> boardVoList) {
+        return boardVoList.stream()
+                .map(BoardVo::getBoardId)
+                .collect(Collectors.toList());
     }
 
     /**

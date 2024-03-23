@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Controller
@@ -35,15 +37,18 @@ public class FileController {
      */
     @ResponseBody
     @GetMapping("/images/{filename}")
-    public Resource downloadImage(@PathVariable String filename, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Resource> downloadImage(@PathVariable String filename, HttpServletResponse response) throws IOException {
         // DB 에 존재하는지 파일 찾기
         Optional<FileVo> fileOptional = fileRepository.findByStoreFileName(filename);
-        FileVo fileVo = fileOptional.orElse(null);
 
-        if(fileVo != null) {
+        if(fileOptional.isPresent()) {
             // DB 에 파일이 존재할 경우
             // 경로에 있는 파일에 접근을 해서 파일을 스트림으로 반환하게 된다.
-            return new UrlResource("file:" + fileStore.getFullPath(filename));
+            UrlResource resource = new UrlResource("file:" + fileStore.getFullPath(filename));
+
+            return ResponseEntity.ok()
+                    .cacheControl(CacheControl.maxAge(15, TimeUnit.DAYS)) // 15일 캐시 설정
+                    .body(resource);
         }
 
         response.sendError(404);

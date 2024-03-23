@@ -35,7 +35,7 @@
     <!-- 페이지네이션 -->
     <!-- board_delete_date 가 존재 시 삭제 된 게시글이므로 포함하지 않는다. -->
     <!-- 키워드로 검색하기, 최근 순 정렬 -->
-    <select id="findAll" parameterType="hello.board.myboard.dto.board.BoardSearchDto" resultType="BoardVo">
+    <select id="findAll" parameterType="BoardSearchDto" resultType="BoardVo">
         select
             <include refid="boardColumns"/>
         from
@@ -91,7 +91,7 @@
             board_id = #{boardId}
     </delete>
 
-    <select id="getPageMaxCount" parameterType="hello.board.myboard.dto.board.BoardSearchDto" resultType="Integer">
+    <select id="getPageMaxCount" parameterType="BoardSearchDto" resultType="Integer">
         select
             count(*)
         from
@@ -117,6 +117,7 @@
         <result column="board_regdate" property="boardRegdate"/>
         <result column="board_update_date" property="boardUpdateDate"/>
         <result column="board_delete_date" property="boardDeleteDate"/>
+        <result column="like_count" property="likeCount"/>
         <collection property="fileVoList" ofType="FileVo">
             <id column="file_id" property="fileId"/>
             <result column="board_id" property="boardId"/>
@@ -131,10 +132,15 @@
     <select id="findBoardFileById" parameterType="Long" resultMap="BoardFileVoMap">
         select
             b.board_id, b.member_id, b.board_writer, b.board_title, b.board_content, b.board_regdate, b.board_update_date, b.board_delete_date,
-            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_image_yn, f.file_regdate
+            f.file_id, f.board_id, f.upload_file_name, f.store_file_name, f.file_image_yn, f.file_regdate,
+                (select
+                    count(likes.likes_id)
+                from
+                    likes
+                where
+                    likes.board_id = #{id}) as like_count
         from
-        board as b
-            left outer join file as f on b.board_id = f.board_id
+            board as b left outer join file as f on b.board_id = f.board_id
         where
             b.board_id = #{id}
     </select>
