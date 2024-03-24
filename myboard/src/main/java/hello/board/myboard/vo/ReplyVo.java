@@ -1,5 +1,6 @@
 package hello.board.myboard.vo;
 
+import hello.board.myboard.dto.reply.ReplyDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,5 +24,16 @@ public class ReplyVo {
         this.replyWriter = replyWriter;
         this.replyContent = replyContent;
         this.replyRegdate = replyRegdate;
+    }
+
+    public ReplyDto toDto() {
+        return ReplyDto.builder()
+                .replyId(replyId)
+                .boardId(boardId)
+                .memberId(memberId)
+                .replyWriter(replyWriter)
+                .replyContent(replyContent)
+                .replyRegdate(replyRegdate)
+                .build();
     }
 }

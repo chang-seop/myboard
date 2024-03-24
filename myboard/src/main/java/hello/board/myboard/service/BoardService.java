@@ -4,10 +4,7 @@ import hello.board.myboard.common.exception.BadRequestException;
 import hello.board.myboard.common.exception.CustomFileUploadException;
 import hello.board.myboard.dto.likes.LikesBoardCountDto;
 import hello.board.myboard.repository.LikesRepository;
-import hello.board.myboard.vo.BoardFileVo;
-import hello.board.myboard.vo.BoardVo;
-import hello.board.myboard.vo.FileVo;
-import hello.board.myboard.vo.MemberVo;
+import hello.board.myboard.vo.*;
 import hello.board.myboard.common.file.FileStore;
 import hello.board.myboard.dto.Pagination;
 import hello.board.myboard.dto.PagingResponseDto;
@@ -33,6 +30,7 @@ public class BoardService {
     private final FileService fileService;
     private final FileStore fileStore;
     private final LikesRepository likesRepository;
+    private final LikesService likesService;
 
     /**
      * 게시글 저장
@@ -58,7 +56,7 @@ public class BoardService {
      * @return BoardDto
      */
     @Transactional(readOnly = true)
-    public BoardDto findBoardAndFiles(Long boardId) {
+    public BoardDto findBoardAndFiles(Long boardId, Long memberId) {
         // boardId 로 된 File 이 있는지 조회
         Optional<BoardFileVo> BoardFileOptional = boardRepository.findBoardFileById(boardId);
 
@@ -70,21 +68,9 @@ public class BoardService {
             throw new BadRequestException("삭제된 게시글입니다.");
         }
 
-        // boardFile 이 null 이 아닐 경우
-        if(!ObjectUtils.isEmpty(boardFileVo.getFileVoList())) {
-            return BoardDto.builder()
-                    .boardId(boardFileVo.getBoardId())
-                    .memberId(boardFileVo.getMemberId())
-                    .boardWriter(boardFileVo.getBoardWriter())
-                    .boardTitle(boardFileVo.getBoardTitle())
-                    .boardContent(boardFileVo.getBoardContent())
-                    .boardRegdate(boardFileVo.getBoardRegdate())
-                    .likeCount(boardFileVo.getLikeCount())
-                    .fileList(boardFileVo.getFileVoList())
-                    .build();
-        }
+        int myBoardLikeCount = likesService.getLikeBoard(memberId, boardId);
 
-        // * File 이 존재하지 않은 경우 *
+        // boardFile 이 null 이 아닐 경우
         return BoardDto.builder()
                 .boardId(boardFileVo.getBoardId())
                 .memberId(boardFileVo.getMemberId())
@@ -92,7 +78,9 @@ public class BoardService {
                 .boardTitle(boardFileVo.getBoardTitle())
                 .boardContent(boardFileVo.getBoardContent())
                 .boardRegdate(boardFileVo.getBoardRegdate())
-                .likeCount(boardFileVo.getLikeCount())
+                .boardLikeCount(boardFileVo.getLikeCount())
+                .myBoardLikeCount(myBoardLikeCount)
+                .fileList(boardFileVo.getFileVoList())
                 .build();
     }
 
@@ -127,7 +115,7 @@ public class BoardService {
                 .stream()
                 .collect(Collectors.toMap(LikesBoardCountDto::getBoardId, LikesBoardCountDto::getLikeCount)); // key : boardId value : likeCount
 
-        boardDtoList.forEach(b -> b.setLikeCount(longIntegerMap.get(b.getBoardId()))); // 반복문 돌면서 likeCount 값 넣기
+        boardDtoList.forEach(b -> b.setBoardLikeCount(longIntegerMap.get(b.getBoardId()))); // 반복문 돌면서 likeCount 값 넣기
 
         return new PagingResponseDto<>(boardDtoList, pagination);
     }

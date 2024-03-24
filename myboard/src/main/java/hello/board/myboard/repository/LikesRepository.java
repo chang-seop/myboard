@@ -1,6 +1,7 @@
 package hello.board.myboard.repository;
 
 import hello.board.myboard.dto.likes.LikesBoardCountDto;
+import hello.board.myboard.dto.likes.LikesReplyCountDto;
 import hello.board.myboard.vo.LikesVo;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface LikesRepository {
     Integer findCountByBoardId(Long boardId);
     Integer findCountByReplyId(Long replyId);
     List<LikesBoardCountDto> findBoardLikeByBoardIdList(List<Long> boardIdList);
+    List<LikesReplyCountDto> findReplyLikesCountByReplyIdListAndMemberId(List<Long> replyIdList, Long memberId);
 }

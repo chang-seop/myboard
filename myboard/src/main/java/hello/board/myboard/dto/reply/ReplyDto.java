@@ -14,14 +14,18 @@ public class ReplyDto {
     private String replyWriter;
     private String replyContent;
     private LocalDateTime replyRegdate;
+    private Integer replyLikeCount;
+    private Integer myReplyLikeCount;
 
     @Builder
-    public ReplyDto(Long replyId, Long boardId, Long memberId, String replyWriter, String replyContent, LocalDateTime replyRegdate) {
+    public ReplyDto(Long replyId, Long boardId, Long memberId, String replyWriter, String replyContent, LocalDateTime replyRegdate, Integer replyLikeCount, Integer myReplyLikeCount) {
         this.replyId = replyId;
         this.boardId = boardId;
         this.memberId = memberId;
         this.replyWriter = replyWriter;
         this.replyContent = replyContent;
         this.replyRegdate = replyRegdate;
+        this.replyLikeCount = replyLikeCount;
+        this.myReplyLikeCount = myReplyLikeCount;
     }
 }

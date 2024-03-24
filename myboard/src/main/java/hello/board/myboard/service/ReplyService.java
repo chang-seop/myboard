@@ -1,6 +1,8 @@
 package hello.board.myboard.service;
 
 import hello.board.myboard.common.exception.BadRequestException;
+import hello.board.myboard.dto.likes.LikesReplyCountDto;
+import hello.board.myboard.repository.LikesRepository;
 import hello.board.myboard.vo.MemberVo;
 import hello.board.myboard.vo.ReplyVo;
 import hello.board.myboard.dto.Pagination;
@@ -14,16 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
     private final ReplyRepository replyRepository;
+    private final LikesRepository likesRepository;
 
     /**
      * 댓글 저장
@@ -44,7 +45,7 @@ public class ReplyService {
      * 댓글 조회 (페이징 처리)
      */
     @Transactional(readOnly = true)
-    public PagingResponseDto<ReplyDto> findPageReply(ReplySearchDto replySearchDto, Long boardId) {
+    public PagingResponseDto<ReplyDto> findPageReply(ReplySearchDto replySearchDto, Long boardId, Long memberId) {
         // 조건에 해당하는 데이터가 없는 경우, 응답 데이터에 비어있는 리스트와 null 을 담아 반환
         Integer count = replyRepository.findPageMaxCountByBoardId(boardId);
 
@@ -59,15 +60,34 @@ public class ReplyService {
         // 계산된 페이지 정보의 일부(limitStart, recordSize)를 기준으로 리스트 데이터 조회 후 응답 데이터 반환
         List<ReplyVo> findReplyListVo = replyRepository.findPageByBoardId(replySearchDto, boardId);
 
-        List<ReplyDto> replyDtoList = new ArrayList<>();
-        findReplyListVo.forEach(reply -> replyDtoList.add(ReplyDto.builder()
-                        .replyId(reply.getReplyId())
-                        .boardId(reply.getBoardId())
-                        .memberId(reply.getMemberId())
-                        .replyWriter(reply.getReplyWriter())
-                        .replyContent(reply.getReplyContent())
-                        .replyRegdate(reply.getReplyRegdate())
-                        .build()));
+        // DTO List 만들기
+        List<ReplyDto> replyDtoList = findReplyListVo.stream()
+                .map(ReplyVo::toDto)
+                .collect(Collectors.toList());
+
+        // replyId 로 longList 만들기
+        List<Long> longList = replyDtoList.stream()
+                .map(ReplyDto::getReplyId)
+                .collect(Collectors.toList());
+
+        // LikesReplyCountDto 를 key:replyId value:replyLikeCount MAP 으로 만들기
+        Map<Long, Integer> likesReplyCountMap = likesRepository.findReplyLikesCountByReplyIdListAndMemberId(longList, null)
+                .stream()
+                .collect(Collectors.toMap(LikesReplyCountDto::getReplyId, LikesReplyCountDto::getReplyLikeCount));
+
+        // MyLikesReplyCountDto 를 key:replyId value:myReplyLikeCount MAP 으로 만들기
+        Map<Long, Integer> myLikesReplyCountMap = likesRepository.findReplyLikesCountByReplyIdListAndMemberId(longList, memberId)
+                .stream()
+                .collect(Collectors.toMap(LikesReplyCountDto::getReplyId, LikesReplyCountDto::getReplyLikeCount));
+
+        // 반복문을 돌리면서
+        // 1. replyDto 에 MAP 에서 replyId로 꺼낸 replyLikeCount 를 넣어주기
+        // 2. myReplyLikeCount 넣어주기
+        replyDtoList.forEach(replyDto -> {
+            Long replyId = replyDto.getReplyId();
+            replyDto.setReplyLikeCount(likesReplyCountMap.get(replyId));
+            replyDto.setMyReplyLikeCount(myLikesReplyCountMap.get(replyId) != null ? 1 : 0);
+        });
 
         return new PagingResponseDto<>(replyDtoList, pagination);
     }

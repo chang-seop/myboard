@@ -33,7 +33,7 @@ public class LikesController {
     public ResponseEntity<Object> likeReply(@RequestBody LikesReplyDto likesReplyDto,
                                             @AuthenticationPrincipal MemberDetailsDto memberDetailsDto) {
 
-        int like = likesService.likeReply(memberDetailsDto.getMemberVo().getMemberId(), likesReplyDto.getLikesId());
+        int like = likesService.likeReply(memberDetailsDto.getMemberVo().getMemberId(), likesReplyDto.getReplyId());
 
         return ResponseEntity.ok(like);
     }

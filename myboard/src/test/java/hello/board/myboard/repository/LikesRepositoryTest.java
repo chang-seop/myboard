@@ -1,6 +1,7 @@
 package hello.board.myboard.repository;
 
 import hello.board.myboard.dto.likes.LikesBoardCountDto;
+import hello.board.myboard.dto.likes.LikesReplyCountDto;
 import hello.board.myboard.vo.BoardVo;
 import hello.board.myboard.vo.LikesVo;
 import hello.board.myboard.vo.MemberVo;
@@ -172,5 +173,43 @@ class LikesRepositoryTest {
         // then
         LikesBoardCountDto likesBoardCountDto = list.get(0);
         assertThat(likesBoardCountDto.getLikeCount()).isEqualTo(1);
+    }
+
+    @Test
+    void findLikesReplyCountDtoByReplyIdList_LongList_dynamicQuery() {
+        MemberVo memberVo = memberRepository.findByName("한국").orElseThrow(RuntimeException::new);
+        List<BoardVo> boardList = boardRepository.findByMemberId(memberVo.getMemberId());
+        BoardVo boardVo = boardList.get(0);
+        List<ReplyVo> replyList = replyRepository.findByBoardId(boardVo.getBoardId());
+
+        List<Long> LongList = replyList.stream()
+                .map(ReplyVo::getReplyId)
+                .collect(Collectors.toList());
+
+        // when
+        List<LikesReplyCountDto> list = likesRepository.findReplyLikesCountByReplyIdListAndMemberId(LongList, null);
+
+        // then
+        LikesReplyCountDto likesReplyCountDto = list.get(0);
+        assertThat(likesReplyCountDto.getReplyLikeCount()).isEqualTo(1);
+    }
+
+    @Test
+    void findLikesReplyCountDtoByReplyIdList_LongListAndMemberId_dynamicQuery() {
+        MemberVo memberVo = memberRepository.findByName("한국").orElseThrow(RuntimeException::new);
+        List<BoardVo> boardList = boardRepository.findByMemberId(memberVo.getMemberId());
+        BoardVo boardVo = boardList.get(0);
+        List<ReplyVo> replyList = replyRepository.findByBoardId(boardVo.getBoardId());
+
+        List<Long> LongList = replyList.stream()
+                .map(ReplyVo::getReplyId)
+                .collect(Collectors.toList());
+
+        // when
+        List<LikesReplyCountDto> list = likesRepository.findReplyLikesCountByReplyIdListAndMemberId(LongList, memberVo.getMemberId());
+
+        // then
+        LikesReplyCountDto likesReplyCountDto = list.get(0);
+        assertThat(likesReplyCountDto.getReplyLikeCount()).isEqualTo(1);
     }
 }

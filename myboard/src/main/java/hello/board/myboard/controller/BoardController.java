@@ -26,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ public class BoardController {
     private final BoardService boardService;
     private final ReplyService replyService;
     private final FileStore fileStore;
-    private final LikesService likesService;
     @Value("${file.maxSize}")
     private Integer fileMaxSize;
 
@@ -73,13 +73,12 @@ public class BoardController {
         }
         MemberVo memberVo = memberDetailsDto.getMemberVo();
 
-        BoardDto boardDto = boardService.findBoardAndFiles(boardId);
-        PagingResponseDto<ReplyDto> pagingResponseDto = replyService.findPageReply(params, boardId);
-        int myLikeCount = likesService.getLikeBoard(memberVo.getMemberId(), boardId);
+        BoardDto boardDto = boardService.findBoardAndFiles(boardId, memberVo.getMemberId());
+        PagingResponseDto<ReplyDto> pagingResponseDto = replyService.findPageReply(params, boardId, memberVo.getMemberId());
 
-        model.addAttribute("myLikeCount", myLikeCount);
         model.addAttribute("replySaveDto", new ReplySaveDto());
         model.addAttribute("replyModifyDto", new ReplyDeleteDto());
+
         model.addAttribute("authMemberId", memberVo.getMemberId()); // 파일 삭제 하기 위한 model 속성
         model.addAttribute("authMemberNm", memberVo.getMemberNm());
         model.addAttribute("boardDto", boardDto);
@@ -140,7 +139,7 @@ public class BoardController {
                                   @PathVariable("boardId") Long boardId,
                                   Model model) {
 
-        BoardDto boardAndFiles = boardService.findBoardAndFiles(boardId);
+        BoardDto boardAndFiles = boardService.findBoardAndFiles(boardId, memberDetailsDto.getMemberVo().getMemberId());
 
         // 게시글 글쓴이가 아닐 경우 Exception
         if(!boardAndFiles.getMemberId().equals(memberDetailsDto.getMemberVo().getMemberId())) {
@@ -159,9 +158,10 @@ public class BoardController {
     public String boardModify(@AuthenticationPrincipal MemberDetailsDto memberDetailsDto,
                               @Valid @ModelAttribute BoardModifyDto boardModifyDto,
                               BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes,
                               Model model) {
 
-        BoardDto boardAndFiles = boardService.findBoardAndFiles(boardModifyDto.getBoardId());
+        BoardDto boardAndFiles = boardService.findBoardAndFiles(boardModifyDto.getBoardId(), memberDetailsDto.getMemberVo().getMemberId());
 
         if(bindingResult.hasErrors()) {
             modifyViewModelAdd(model, boardAndFiles, boardModifyDto);
@@ -176,8 +176,8 @@ public class BoardController {
         }
 
         boardService.updateBoard(boardModifyDto, memberDetailsDto.getMemberVo());
-
-        return "redirect:/board";
+        redirectAttributes.addAttribute("boardId", boardModifyDto.getBoardId());
+        return "redirect:/board/{boardId}";
     }
 
     private void modifyViewModelAdd( Model model, BoardDto boardAndFiles, BoardModifyDto boardModifyDto) {

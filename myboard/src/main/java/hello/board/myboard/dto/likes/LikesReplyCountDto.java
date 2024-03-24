@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LikesReplyDto {
+public class LikesReplyCountDto {
     private Long replyId;
+    private Integer replyLikeCount;
 }
