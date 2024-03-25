@@ -16,6 +16,5 @@ public interface LikesRepository {
     Optional<LikesVo> findByMemberIdAndReplyId(Long memberId, Long replyId);
     Integer findCountByBoardId(Long boardId);
     Integer findCountByReplyId(Long replyId);
-    List<LikesBoardCountDto> findBoardLikeByBoardIdList(List<Long> boardIdList);
     List<LikesReplyCountDto> findReplyLikesCountByReplyIdListAndMemberId(List<Long> replyIdList, Long memberId);
 }

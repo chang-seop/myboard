@@ -57,11 +57,6 @@ public class MyBatisLikesRepository implements LikesRepository {
     }
 
     @Override
-    public List<LikesBoardCountDto> findBoardLikeByBoardIdList(List<Long> boardIdList) {
-        return likesDao.findBoardLikeByBoardIdList(boardIdList);
-    }
-
-    @Override
     public List<LikesReplyCountDto> findReplyLikesCountByReplyIdListAndMemberId(List<Long> replyIdList, Long memberId) {
         return likesDao.findReplyLikesCountByReplyIdListAndMemberId(replyIdList, memberId);
     }

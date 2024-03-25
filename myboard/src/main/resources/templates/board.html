@@ -117,6 +117,8 @@
                 <option th:each="searchType : ${searchTypeList}" th:value="${searchType.value}" th:text="${searchType.name}"></option>
             </select>
             <input style="width:150px; height:40px;" class="d-inline" type="text" th:name="keyword" th:id="keyword">
+            <label th:for="likeType">좋아요 정렬</label>
+            <input class="d-inline" type="radio" th:id="likeType" th:name="likeType" value="true">
             <button style="width:60px; height:40px;" class="btn btn-outline-success d-inline mb-1" type="submit">검색</button>
         </form>
     </div>

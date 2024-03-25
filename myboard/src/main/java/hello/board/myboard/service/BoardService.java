@@ -102,20 +102,12 @@ public class BoardService {
         params.setPagination(pagination);
 
         // 계산된 페이지 정보의 일부(limitStart, recordSize)를 기준으로 리스트 데이터 조회 후 응답 데이터 반환
-        List<BoardVo> findAll = boardRepository.findAll(params);
+        List<BoardLikesVo> findAll = boardRepository.findAll(params);
 
         List<BoardDto> boardDtoList = findAll
                 .stream()
-                .map(BoardVo::toDto)
+                .map(BoardLikesVo::toBoardDto)
                 .collect(Collectors.toList());
-
-        List<Long> boardIds = toBoardIdList(findAll);
-
-        Map<Long, Integer> longIntegerMap = likesRepository.findBoardLikeByBoardIdList(boardIds)
-                .stream()
-                .collect(Collectors.toMap(LikesBoardCountDto::getBoardId, LikesBoardCountDto::getLikeCount)); // key : boardId value : likeCount
-
-        boardDtoList.forEach(b -> b.setBoardLikeCount(longIntegerMap.get(b.getBoardId()))); // 반복문 돌면서 likeCount 값 넣기
 
         return new PagingResponseDto<>(boardDtoList, pagination);
     }

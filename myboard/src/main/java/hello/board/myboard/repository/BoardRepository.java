@@ -2,6 +2,7 @@ package hello.board.myboard.repository;
 
 import hello.board.myboard.dto.board.BoardDto;
 import hello.board.myboard.vo.BoardFileVo;
+import hello.board.myboard.vo.BoardLikesVo;
 import hello.board.myboard.vo.BoardVo;
 import hello.board.myboard.dto.board.BoardSearchDto;
 
@@ -12,7 +13,7 @@ public interface BoardRepository {
     BoardVo save(BoardVo boardVo);
     Optional<BoardVo> findById(Long id);
     List<BoardVo> findByMemberId(Long memberId);
-    List<BoardVo> findAll(BoardSearchDto params);
+    List<BoardLikesVo> findAll(BoardSearchDto params);
     Integer getPageMaxCount(BoardSearchDto search);
     Optional<BoardFileVo> findBoardFileById(Long id);
     void deleteSetupByBoardIdAndMemberId(Long boardId, Long memberId);

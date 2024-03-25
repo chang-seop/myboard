@@ -2,6 +2,7 @@ package hello.board.myboard.repository;
 
 import hello.board.myboard.repository.dao.BoardDao;
 import hello.board.myboard.vo.BoardFileVo;
+import hello.board.myboard.vo.BoardLikesVo;
 import hello.board.myboard.vo.BoardVo;
 import hello.board.myboard.dto.board.BoardSearchDto;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class MyBatisBoardRepository implements BoardRepository {
     }
 
     @Override
-    public List<BoardVo> findAll(BoardSearchDto search) {
+    public List<BoardLikesVo> findAll(BoardSearchDto search) {
         return boardDao.findAll(search);
     }
 

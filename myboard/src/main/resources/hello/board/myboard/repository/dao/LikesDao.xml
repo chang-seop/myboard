@@ -75,26 +75,6 @@
             likes.reply_id = #{replyId}
     </select>
 
-    <resultMap id="likesBoardCountDtoMap" type="LikesBoardCountDto">
-        <id property="boardId" column="board_id"/>
-        <result property="likeCount" column="like_count"/>
-    </resultMap>
-
-    <!-- 일(Board)대다(Likes) 페이징 쿼리에서 필요한 IN 쿼리  (N + 1 문제 해결) -->
-    <select id="findBoardLikeByBoardIdList" resultMap="likesBoardCountDtoMap">
-        select
-            b.board_id, count(l.likes_id) as like_count
-        from
-            board as b left outer join likes as l on (l.board_id = b.board_id)
-        where
-            b.board_id in
-                <foreach collection="boardIdList" item="item" index="index" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
-        group by
-            b.board_id
-    </select>
-
     <resultMap id="likesReplyCountDtoMap" type="LikesReplyCountDto">
         <id property="replyId" column="reply_id"/>
         <result property="replyLikeCount" column="reply_like_count"/>

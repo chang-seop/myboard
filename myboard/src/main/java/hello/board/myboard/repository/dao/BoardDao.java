@@ -1,6 +1,7 @@
 package hello.board.myboard.repository.dao;
 
 import hello.board.myboard.vo.BoardFileVo;
+import hello.board.myboard.vo.BoardLikesVo;
 import hello.board.myboard.vo.BoardVo;
 import hello.board.myboard.dto.board.BoardSearchDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,7 +15,7 @@ public interface BoardDao {
     void save(BoardVo boardVo);
     Optional<BoardVo> findById(Long id);
     List<BoardVo> findByMemberId(Long memberId);
-    List<BoardVo> findAll(BoardSearchDto search);
+    List<BoardLikesVo> findAll(BoardSearchDto search);
     Integer getPageMaxCount(BoardSearchDto search);
     Optional<BoardFileVo> findBoardFileById(Long id);
     void deleteSetupByBoardIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") Long memberId);

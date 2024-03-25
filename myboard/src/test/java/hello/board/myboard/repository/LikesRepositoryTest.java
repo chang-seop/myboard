@@ -158,22 +158,6 @@ class LikesRepositoryTest {
         assertThat(count).isEqualTo(1);
     }
 
-    @Test
-    void findBoardLikeByBoardIdList() {
-        MemberVo memberVo = memberRepository.findByName("한국").orElseThrow(RuntimeException::new);
-        List<BoardVo> boardList = boardRepository.findByMemberId(memberVo.getMemberId());
-
-        List<Long> boardIdList = boardList.stream()
-                .map(BoardVo::getBoardId)
-                .collect(Collectors.toList());
-
-        // when
-        List<LikesBoardCountDto> list = likesRepository.findBoardLikeByBoardIdList(boardIdList);
-
-        // then
-        LikesBoardCountDto likesBoardCountDto = list.get(0);
-        assertThat(likesBoardCountDto.getLikeCount()).isEqualTo(1);
-    }
 
     @Test
     void findLikesReplyCountDtoByReplyIdList_LongList_dynamicQuery() {

@@ -133,7 +133,7 @@ public class BoardRepositoryTest {
         search.setPagination(pagination);
 
         // when
-        List<BoardVo> findBoardListVo = boardRepository.findAll(search);
+        List<BoardLikesVo> findBoardListVo = boardRepository.findAll(search);
 
         // then
         Assertions.assertThat(findBoardListVo.size()).isEqualTo(10);
@@ -168,7 +168,7 @@ public class BoardRepositoryTest {
         search.setPagination(pagination);
 
         // when
-        List<BoardVo> findBoardListVo = boardRepository.findAll(search);
+        List<BoardLikesVo> findBoardListVo = boardRepository.findAll(search);
 
         // then
         Assertions.assertThat(findBoardListVo.size()).isEqualTo(10);
@@ -203,7 +203,43 @@ public class BoardRepositoryTest {
         search.setPagination(pagination);
 
         // when
-        List<BoardVo> findBoardListVo = boardRepository.findAll(search);
+        List<BoardLikesVo> findBoardListVo = boardRepository.findAll(search);
+
+        // then
+        Assertions.assertThat(findBoardListVo.size()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("좋아요 순서대로 정렬 테스트")
+    public void findAll_likeType() {
+        // given
+        MemberVo memberVo = MemberVo.builder()
+                .memberEmail("hello1@naver.com")
+                .memberNm("한국")
+                .memberPwd("123456")
+                .build();
+        memberRepository.save(memberVo);
+
+        for(int i = 0; i < 20; i++) {
+            BoardVo boardVo = BoardVo.builder()
+                    .boardWriter("한국")
+                    .memberId(memberVo.getMemberId())
+                    .boardTitle("제목" + i)
+                    .boardContent("글" + i)
+                    .build();
+            boardRepository.save(boardVo);
+        }
+
+
+
+        BoardSearchDto search = new BoardSearchDto();
+        search.setLikeType(true);
+
+        Pagination pagination = new Pagination(boardRepository.getPageMaxCount(search), search);
+        search.setPagination(pagination);
+
+        // when
+        List<BoardLikesVo> findBoardListVo = boardRepository.findAll(search);
 
         // then
         Assertions.assertThat(findBoardListVo.size()).isEqualTo(10);

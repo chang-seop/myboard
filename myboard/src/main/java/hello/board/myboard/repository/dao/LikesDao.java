@@ -23,7 +23,6 @@ public interface LikesDao {
                                                @Param("replyId") Long replyId);
     Integer findCountByBoardId(Long boardId);
     Integer findCountByReplyId(Long replyId);
-    List<LikesBoardCountDto> findBoardLikeByBoardIdList(List<Long> boardIdList);
     List<LikesReplyCountDto> findReplyLikesCountByReplyIdListAndMemberId(@Param("replyIdList") List<Long> replyIdList,
                                                                          @Param("memberId") Long memberId);
 }
