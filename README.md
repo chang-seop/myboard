@@ -107,3 +107,117 @@
   - spring-boot-starter-test
   - mysql-connector-j
   - lombok
+
+<br/>
+<hr/>
+
+### 배포 과정
+#### 사용 툴
+- VMWare Workstation 17 player, Putty, FileZilla
+- HostOS: Windows 11
+- guestOS: CentOS Stream 9
+
+#### 버전
+- nginx: 1.20.1
+- Redis: 6.2.7
+- MySQL: 8.4.1
+- JDK: 17.0.6
+
+#### 순서
+1. 가상 OS VM Ware 프로그램 설치
+2. 운영체제 CentOS Stream 9 설치
+3. Putty로 접속할 관리자 계정 생성
+4. 접속은 외부 서버가 있다고 가정하여 Putty로 SSH 접속 및 파일은 FileZilla를 통해 파일 옮기기
+5. Java Development Kit(JDK) 설치
+6. nginx 설치, 접속 테스트
+7. Host OS 공유기에 포트 포워딩 설정(80, 443), VMWare 포트 포워딩 설정(80, 443 외부 접속 허용)
+8. Firewall(방화벽) 80, 443 포트 열기
+9. '내도메인.한국' 무료 DNS 사용 및 Host 외부 IP 연결
+10. MySQL, Redis 설치 및 계정 생성, 데이터베이스 생성 및 테이블 추가
+11. Spring Boot 이용하여 빌드(BootJar) 후 파일 systemctl(서비스) 등록
+12. Certbot 이용하여 무료 lets' encrypt SSL/TLS 설치 및 nginx.conf 파일 설정
+13. 서비스 실행 및 외부 사용자 접속 테스트
+
+#### nginx.conf
+```nginx
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    client_max_body_size 10M;
+
+    upstream app {
+       server 127.0.0.1:8080;
+    }
+
+    underscores_in_headers on;
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # Redirect all Traffic to HTTPS
+    server {
+      listen 80;
+
+	  location ~ /\.well-known/acme-challenge/ {
+	  	allow all;
+		root /var/www/letsencrypt;
+	  }
+
+      return 301 https://$host$request_uri;
+    }
+ 
+    server {
+      listen 443 ssl http2;
+      ssl_certificate /etc/letsencrypt/live/nineto6.p-e.kr/fullchain.pem;
+      ssl_certificate_key /etc/letsencrypt/live/nineto6.p-e.kr/privkey.pem;
+
+      # Disable SSL
+      ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+     
+      # 통신과정에서 사용할 암호화 알고리즘
+      ssl_prefer_server_ciphers on;
+      ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;
+
+      # Enable HSTS
+      # client의 browser에게 http로 어떠한 것도 load하지 말라고 규제합니다.
+      add_header Strict-Transport-Security "max-age=31536000" always;
+
+      # SSL sessions
+      ssl_session_cache shared:SSL:10m;
+      ssl_session_timeout 10m;
+    
+      location / {
+        proxy_pass http://app;
+        proxy_set_header Host $host;
+        proxy_set_header X-Nginx-Proxy true;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+      } 
+    }
+}
+```
+
+#### 96talk.service
+```
+[Unit]
+Description=MyBoard Description
+After=syslog.target network.target myboard.service
+
+[Service]
+ExecStart=/bin/bash -c "exec java -jar /home/ikavon/server/myboard/myboard-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod"
+Restart=on-failure
+RestartSec=10
+
+User=root
+group=root
+
+[Install]
+WantedBy=multi-user.taget
+```
