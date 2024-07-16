@@ -119,7 +119,6 @@
 
 #### 버전
 - nginx: 1.20.1
-- Redis: 6.2.7
 - MySQL: 8.4.1
 - JDK: 17.0.6
 
@@ -133,7 +132,7 @@
 7. Host OS 공유기에 포트 포워딩 설정(80, 443), VMWare 포트 포워딩 설정(80, 443 외부 접속 허용)
 8. Firewall(방화벽) 80, 443 포트 열기
 9. '내도메인.한국' 무료 DNS 사용 및 Host 외부 IP 연결
-10. MySQL, Redis 설치 및 계정 생성, 데이터베이스 생성 및 테이블 추가
+10. MySQL 설치 및 계정 생성, 데이터베이스 생성 및 테이블 추가
 11. Spring Boot 이용하여 빌드(BootJar) 후 파일 systemctl(서비스) 등록
 12. Certbot 이용하여 무료 lets' encrypt SSL/TLS 설치 및 nginx.conf 파일 설정
 13. 서비스 실행 및 외부 사용자 접속 테스트
