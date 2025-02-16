@@ -74,6 +74,45 @@ BoardService에 File과 Board 관련 로직이 한번에 작성되어 한 트랜
 #### 회고록
 처음 설계에서 File 관련된 로직이 많지 않을 것 같아 BoardService에 함께 작성을 했는데 코드의 복잡성과 책임이 많아지게 되었습니다. 앞으로 설계 할 때는 단일 책임 원칙을 잘 따라야겠다는 배움을 얻었습니다. (SOLID, SRP 단일 책임 원칙)
 
+<hr/>
+
+### 💡 프로젝트 실행 이미지
+#### 최초 화면(메인)
+![image1](./md_resource/images/1.png)
+#### 목록 (메인, 로그인, 회원가입)
+![image2](./md_resource/images/2.png)
+#### 회원 가입
+![image3](./md_resource/images/3.png)
+#### 로그인
+![image4](./md_resource/images/4.png)
+#### 로그인 된 최초 화면(메인)
+![image5](./md_resource/images/5.png)
+#### 로그인 된 목록
+![image6](./md_resource/images/6.png)
+#### 게시글 목록
+![image7](./md_resource/images/7.png)
+![image8](./md_resource/images/8.png)
+#### 게시글 작성
+![image9](./md_resource/images/9.png)
+#### 작성된 게시글
+![image10](./md_resource/images/10.png)
+#### 게시글 상세
+![image11](./md_resource/images/11.png)
+#### 댓글이 작성 된 게시글
+![image12](./md_resource/images/12.png)
+#### 페이징 처리가 된 댓글
+![image13](./md_resource/images/13.png)
+#### 게시글 수정 
+![image14](./md_resource/images/14.png)
+#### 수정 된 게시글 
+![image15](./md_resource/images/15.png)
+#### 삭제 된 게시글 
+![image16](./md_resource/images/16.png)
+#### 게시글 복구
+![image17](./md_resource/images/17.png)
+
+<hr/>
+
 ### 🔍 프로젝트 상세
 #### ERD-Cloud
 ![image-erd](./md_resource/image-erd.png)
