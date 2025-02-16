@@ -110,9 +110,11 @@ BoardService에 File과 Board 관련 로직이 한번에 작성되어 한 트랜
 ![image16](./md_resource/images/16.png)
 #### 게시글 복구
 ![image17](./md_resource/images/17.png)
-
+#### 제목으로 검색
 ![image18](./md_resource/images/18.png)
+#### 글쓴이로 검색
 ![image19](./md_resource/images/19.png)
+#### 좋아요로 정렬
 ![image20](./md_resource/images/20.png)
 
 <hr/>
