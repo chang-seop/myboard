@@ -21,9 +21,13 @@
 <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat-square&logo=springboot&logoColor=FFFFFF"/>
 <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=FFFFFF"/>
 <img src="https://img.shields.io/badge/MyBatis-001202?style=flat-square&logo=mybatis&logoColor=FFFFFF"/>
-<img src="https://img.shields.io/badge/MYSQL-4479A1?style=flat-square&logo=mysql&logoColor=FFFFFF"/>
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=FFFFFF"/>
 <img src="https://img.shields.io/badge/H2 Database-4479A1.svg?&style=flat-square&logo=&logoColor=white">
 <img src="https://img.shields.io/badge/Thymeleaf-005F0F.svg?&style=flat-square&logo=thymeleaf&logoColor=white">
+<img src="https://img.shields.io/badge/html5-E34F26.svg?&style=flat-square&logo=html5&logoColor=white">
+<img src="https://img.shields.io/badge/css3-1572B6.svg?&style=flat-square&logo=css3&logoColor=white">
+<img src="https://img.shields.io/badge/JQuery-0769AD.svg?&style=flat-square&logo=JQuery&logoColor=white">
+<img src="https://img.shields.io/badge/bootstrap-7952B3.svg?&style=flat-square&logo=bootstrap&logoColor=white">
 
 <hr/>
 
@@ -68,11 +72,11 @@
 
 ### ⚒️ 프로젝트 진행 중 문제 발생 및 해결 
 #### 문제 
-BoardService에서 File과 Board 관련 로직이 있는데 로직 진행 도중 Exception으로 인하여 rollback 되어도 파일이 삭제가 되는 현상이 발생하였습니다.
+BoardService에 File과 Board 관련 로직이 있는데 로직 진행 도중 Exception으로 인하여 rollback 되어도 파일이 삭제가 되는 현상이 발생하였습니다.
 #### 해결 방안
-BoardService에 File과 Board 관련 로직이 한번에 작성되어 한 트랜잭션 안에서 이루어지기 때문에 생긴 문제여서, BoardService에서 삭제할 파일을 ArrayList로 담아 반환하여 컨트롤러에서 반환 받은 리스트를 가지고 FileService로 보내 파일 삭제를 진행하였습니다.
+BoardService에 File과 Board 관련 로직이 한번에 작성되어 한 트랜잭션 안에서 이루어지기 때문에 생긴 문제여서, BoardService에 삭제할 파일을 ArrayList로 담아 반환하여 컨트롤러에서 반환 받은 리스트를 가지고 FileService로 보내 파일 삭제를 진행하였습니다.
 #### 회고록
-처음 설계에서 File 관련된 로직이 많지 않을 것 같아 BoardService에 함께 작성을 했는데 코드의 복잡성과 책임이 많아지게 되었습니다. 앞으로 설계 할 때는 단일 책임 원칙을 잘 따라야겠다는 배움을 얻었습니다. (SOLID, SRP 단일 책임 원칙)
+처음 설계에서 File 관련된 로직이 많지 않을 것 같아 BoardService에 함께 작성을 했는데 코드의 복잡성과 책임이 많아지게 되었습니다. 앞으로 설계하게 된다면 단일 책임 원칙을 잘 따라야겠다는 배움을 얻었습니다. (SOLID, SRP 단일 책임 원칙)
 
 <hr/>
 
@@ -110,9 +114,11 @@ BoardService에 File과 Board 관련 로직이 한번에 작성되어 한 트랜
 ![image16](./md_resource/images/16.png)
 #### 게시글 복구
 ![image17](./md_resource/images/17.png)
-
+#### 제목으로 검색
 ![image18](./md_resource/images/18.png)
+#### 글쓴이로 검색
 ![image19](./md_resource/images/19.png)
+#### 좋아요로 정렬
 ![image20](./md_resource/images/20.png)
 
 <hr/>
